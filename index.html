@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Loading Contact...</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f0f2f5;min-height:100vh;display:flex;justify-content:center;padding-bottom:100px}
+    .card{width:100%;max-width:480px;background:#fff;min-height:100vh}
+    .hd{padding:48px 24px 32px;text-align:center}
+    .av{width:96px;height:96px;border-radius:50%;border:3px solid rgba(255,255,255,.3);overflow:hidden;margin:0 auto 16px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center}
+    .av img{width:100%;height:100%;object-fit:cover}
+    .av span{font-size:36px;font-weight:700;opacity:.8}
+    .hd h1{font-size:22px;font-weight:700;margin-bottom:4px}
+    .jt{font-size:14px;opacity:.75}
+    .ac{display:flex;border-top:1px solid rgba(255,255,255,.12)}
+    .ab{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;text-decoration:none;font-size:11px;font-weight:600;letter-spacing:.5px;border-right:1px solid rgba(255,255,255,.12)}
+    .ab:last-child{border-right:none}
+    .ab svg{width:22px;height:22px}
+    .dt{padding:8px 0}
+    .dr{display:flex;align-items:flex-start;gap:16px;padding:14px 20px;border-bottom:1px solid #eee}
+    .dr:last-child{border-bottom:none}
+    .di{width:36px;height:36px;border-radius:50%;background:#f0f2f5;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+    .di svg{width:18px;height:18px;fill:#666}
+    .dc{flex:1}
+    .dv{font-size:15px;font-weight:500;color:#1a1a1a;line-height:1.4}
+    .dv a{color:inherit;text-decoration:none}
+    .dl{font-size:12px;color:#888;margin-top:2px}
+    .ml{display:inline-block;margin-top:8px;font-size:13px;font-weight:600;text-decoration:none}
+    .ss,.sc{padding:16px 20px 8px;border-top:6px solid #f0f2f5}
+    .ss h3,.sc h3{font-size:12px;font-weight:600;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+    .st{font-size:14px;line-height:1.6;color:#444}
+    .sg{display:flex;flex-wrap:wrap;gap:10px}
+    .sl{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:24px;text-decoration:none;font-size:13px;font-weight:600;border:1.5px solid #e0e0e0;color:#333}
+    .sl svg{width:18px;height:18px}
+    .fab{position:fixed;bottom:28px;right:50%;transform:translateX(50%);background:#e91e8c;color:#fff;border:none;border-radius:50px;padding:14px 28px;font-size:15px;font-weight:700;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(233,30,140,.4);text-decoration:none;cursor:pointer}
+    .fab svg{width:20px;height:20px;fill:#fff}
+    .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:16px;color:#888;font-size:16px}
+    .spinner{width:40px;height:40px;border:3px solid #e0e0e0;border-top-color:#1b3c87;border-radius:50%;animation:spin 0.8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .error{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;gap:12px;color:#e53935;font-size:16px;padding:24px;text-align:center}
+    @media(min-width:480px){.card{min-height:unset;border-radius:16px;overflow:hidden;box-shadow:0 8px 48px rgba(0,0,0,.12);margin-top:32px}.fab{right:unset;transform:none}}
+  </style>
+</head>
+<body>
+
+<div id="root">
+  <div class="loading">
+    <div class="spinner"></div>
+    <span>Loading contact...</span>
+  </div>
+</div>
+
+<script>
+// ✅ REPLACE THIS WITH YOUR ACTUAL SUPABASE ANON KEY
+const SUPABASE_URL = "https://huuamwhzydfhqziniqnf.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1dWFtd2h6eWRmaHF6aW5pcW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MjAxOTUsImV4cCI6MjA4OTQ5NjE5NX0.-tTpabRI1b4enlUp8uIXMwmgGv2CLdFgE3vBk01Ye3Y";
+
+function esc(s) {
+  return (s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function hexToCss(hex) {
+  if (!hex) return "#1b3c87";
+  const c = hex.length === 8 ? hex.slice(2) : hex;
+  return "#" + c.padEnd(6,"0");
+}
+function isDark(hex) {
+  const c = hex.replace("#","").padEnd(6,"0");
+  const r = parseInt(c.slice(0,2),16);
+  const g = parseInt(c.slice(2,4),16);
+  const b = parseInt(c.slice(4,6),16);
+  return (r*299 + g*587 + b*114)/1000 < 128;
+}
+function initials(d) {
+  const f = (d.first_name||"")[0]||"";
+  const l = (d.last_name ||"")[0]||"";
+  return (f+l).toUpperCase() || (d.company||"?")[0].toUpperCase();
+}
+
+const icoPhone = '<svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24A11.36 11.36 0 0020 15.5c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1A17 17 0 013 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.02l-2.21 2.2z"/></svg>';
+const icoEmail = '<svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>';
+const icoMap   = '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>';
+const icoBiz   = '<svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>';
+const icoWeb   = '<svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A8.01 8.01 0 015.08 16zm2.95-8H5.08a8.01 8.01 0 014.33-3.56A15.65 15.65 0 008.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.01 8.01 0 01-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>';
+
+function rowHtml(icon, val, label) {
+  return `<div class="dr"><div class="di">${icon}</div><div class="dc"><div class="dv">${val}</div><div class="dl">${label}</div></div></div>`;
+}
+
+async function loadCard() {
+  const id = new URLSearchParams(window.location.search).get("id");
+  if (!id) {
+    document.getElementById("root").innerHTML = '<div class="error">No contact ID provided</div>';
+    return;
+  }
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/vcards?id=eq.${id}&select=*`, {
+      headers: {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY,
+      }
+    });
+    const data = await res.json();
+    if (!data || data.length === 0) {
+      document.getElementById("root").innerHTML = '<div class="error">Contact not found</div>';
+      return;
+    }
+    renderCard(data[0]);
+  } catch(e) {
+    document.getElementById("root").innerHTML = '<div class="error">Failed to load contact. Please try again.</div>';
+  }
+}
+
+function renderCard(d) {
+  const primary   = hexToCss(d.primary_color || "1b3c87");
+  const bg        = hexToCss(d.bg_color || "ffffff");
+  const onPrimary = isDark(primary) ? "#ffffff" : "#111111";
+  const fullName  = [d.first_name, d.last_name].filter(Boolean).join(" ") || d.company || "Contact";
+  const n = esc(fullName);
+
+  document.title = n + " - Contact";
+
+  const vcLines = ["BEGIN:VCARD","VERSION:3.0"];
+  const fn = [d.first_name,d.last_name].filter(Boolean).join(" ");
+  if (fn)                  vcLines.push("FN:"+fn,"N:"+(d.last_name||"")+";"+(d.first_name||"")+";;;");
+  if (d.mobile)            vcLines.push("TEL;TYPE=CELL:"+d.mobile);
+  if (d.phone)             vcLines.push("TEL;TYPE=WORK:"+d.phone);
+  if (d.fax)               vcLines.push("TEL;TYPE=FAX:"+d.fax);
+  if (d.email)             vcLines.push("EMAIL:"+d.email);
+  if (d.company)           vcLines.push("ORG:"+d.company);
+  if (d.job)               vcLines.push("TITLE:"+d.job);
+  if (d.address)           vcLines.push("ADR:;;"+d.address+";;;;");
+  if (d.website)           vcLines.push("URL:"+d.website);
+  if (d.summary)           vcLines.push("NOTE:"+d.summary);
+  if (d.profile_image_url) vcLines.push("PHOTO;VALUE=URI:"+d.profile_image_url);
+  vcLines.push("END:VCARD");
+  const vcardEncoded = encodeURIComponent(vcLines.join("\n"));
+
+  const avatarHtml = d.profile_image_url
+    ? `<img src="${esc(d.profile_image_url)}" alt="${n}"/>`
+    : `<span>${initials(d)}</span>`;
+
+  const titleHtml = (d.job||d.company)
+    ? `<p class="jt">${[d.job,d.company].filter(Boolean).map(esc).join(" · ")}</p>`
+    : "";
+
+  let rows = "";
+  if (d.mobile)       rows += rowHtml(icoPhone, `<a href="tel:${esc(d.mobile)}">${esc(d.mobile)}</a>`, "Mobile");
+  if (d.phone)        rows += rowHtml(icoPhone, `<a href="tel:${esc(d.phone)}">${esc(d.phone)}</a>`, "Telephone");
+  if (d.fax)          rows += rowHtml(icoPhone, esc(d.fax), "Fax");
+  if (d.email)        rows += rowHtml(icoEmail, `<a href="mailto:${esc(d.email)}">${esc(d.email)}</a>`, "Email");
+  if (d.company||d.job) rows += rowHtml(icoBiz, [d.company,d.job].filter(Boolean).map(esc).join("<br>"), d.job||"Company");
+  if (d.address)      rows += rowHtml(icoMap, `${esc(d.address)}<br><a class="ml" style="color:${primary}" href="https://maps.google.com/?q=${encodeURIComponent(d.address)}" target="_blank">SHOW ON MAP</a>`, "Address");
+  if (d.website)      { const h = d.website.startsWith("http") ? d.website : "https://"+d.website; rows += rowHtml(icoWeb, `<a href="${esc(h)}" target="_blank">${esc(d.website)}</a>`, "Website"); }
+
+  let social = "";
+  if (d.facebook)  social += `<a class="sl" href="${esc(d.facebook)}" target="_blank"><svg viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.514c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>Facebook</a>`;
+  if (d.instagram) social += `<a class="sl" href="${esc(d.instagram)}" target="_blank"><svg viewBox="0 0 24 24" fill="#E1306C"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>Instagram</a>`;
+  if (d.linkedin)  social += `<a class="sl" href="${esc(d.linkedin)}" target="_blank"><svg viewBox="0 0 24 24" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn</a>`;
+  if (d.twitter)   social += `<a class="sl" href="${esc(d.twitter)}" target="_blank"><svg viewBox="0 0 24 24" fill="#000"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.261 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>X/Twitter</a>`;
+  if (d.youtube)   social += `<a class="sl" href="${esc(d.youtube)}" target="_blank"><svg viewBox="0 0 24 24" fill="#FF0000"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>YouTube</a>`;
+
+  const actionHtml =
+    ((d.mobile||d.phone) ? `<a class="ab" href="tel:${esc(d.mobile||d.phone)}" style="color:${onPrimary}">${icoPhone}CALL</a>` : "") +
+    (d.email   ? `<a class="ab" href="mailto:${esc(d.email)}" style="color:${onPrimary}">${icoEmail}EMAIL</a>` : "") +
+    (d.address ? `<a class="ab" href="https://maps.google.com/?q=${encodeURIComponent(d.address)}" target="_blank" style="color:${onPrimary}">${icoMap}DIRECTIONS</a>` : "");
+
+  const summaryHtml = d.summary ? `<div class="ss"><h3>About</h3><p class="st">${esc(d.summary)}</p></div>` : "";
+  const socialHtml  = social    ? `<div class="sc"><h3>Social</h3><div class="sg">${social}</div></div>` : "";
+  const fabName     = fullName.replace(/\s+/g,"_");
+
+  document.head.insertAdjacentHTML("beforeend", `<style>
+    .hd{background:${primary}} .hd h1{color:${onPrimary}} .jt{color:${onPrimary}}
+    .av span{color:${onPrimary}} .ac{background:${primary}} .ab svg{fill:${onPrimary}}
+    .card{background:${bg}}
+  </style>`);
+
+  document.getElementById("root").innerHTML = `
+    <div class="card">
+      <div class="hd"><div class="av">${avatarHtml}</div><h1>${n}</h1>${titleHtml}</div>
+      <div class="ac">${actionHtml}</div>
+      <div class="dt">${rows}</div>
+      ${summaryHtml}${socialHtml}
+    </div>
+    <a class="fab" href="data:text/vcard;charset=utf-8,${vcardEncoded}" download="${fabName}.vcf">
+      <svg viewBox="0 0 24 24"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      Add to Contacts
+    </a>`;
+}
+
+loadCard();
+</script>
+</body>
+</html>
