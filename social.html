@@ -1,19 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Social Page</title>
+<title>Loading...</title>
 </head>
 <body>
 <script>
   const id = new URLSearchParams(window.location.search).get('id');
   if (id) {
-    window.location.href =
-      'https://huuamwhzydfhqziniqnf.supabase.co' +
-      '/storage/v1/object/public/landing-pages/pages/' + id + '/index.html';
+    const url = 'https://huuamwhzydfhqziniqnf.supabase.co'
+      + '/storage/v1/object/public/landing-pages/pages/'
+      + id + '/index.html';
+    fetch(url)
+      .then(r => r.text())
+      .then(html => {
+        document.open();
+        document.write(html);
+        document.close();
+      })
+      .catch(() => {
+        document.body.innerHTML =
+          '<p style="font-family:sans-serif;padding:2rem">Page not found.</p>';
+      });
   } else {
-    document.body.innerHTML = '<p style="font-family:sans-serif;padding:2rem">No page found.</p>';
+    document.body.innerHTML =
+      '<p style="font-family:sans-serif;padding:2rem">No ID found.</p>';
   }
 </script>
 </body>
