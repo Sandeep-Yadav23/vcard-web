@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Social Page</title>
+</head>
+<body>
+<script>
+  const id = new URLSearchParams(window.location.search).get('id');
+  if (id) {
+    window.location.href =
+      'https://huuamwhzydfhqziniqnf.supabase.co' +
+      '/storage/v1/object/public/landing-pages/pages/' + id + '/index.html';
+  } else {
+    document.body.innerHTML = '<p style="font-family:sans-serif;padding:2rem">No page found.</p>';
+  }
+</script>
+</body>
+</html>
