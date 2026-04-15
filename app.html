@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Loading…</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--blue:#3B7DD8;--fg:#1e2235;--fg2:#5a6480;--bg:#f5f7fc;--white:#fff;--r:14px}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh}
+.page{max-width:480px;margin:0 auto;padding-bottom:48px}
+
+/* ── hero ── */
+.hero{padding:0 0 28px;text-align:center;color:#fff;position:relative;overflow:hidden}
+.hero-bg{width:100%;height:200px;object-fit:cover;display:block}
+.hero-bg-placeholder{width:100%;height:200px;display:block}
+.hero-body{padding:0 24px}
+.app-icon-wrap{margin:-44px auto 14px;position:relative;z-index:2;width:88px;height:88px}
+.app-icon{width:88px;height:88px;border-radius:22px;border:3px solid #fff;
+  object-fit:cover;box-shadow:0 4px 20px rgba(0,0,0,0.20);display:block}
+.app-icon-fallback{width:88px;height:88px;border-radius:22px;border:3px solid #fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;box-shadow:0 4px 20px rgba(0,0,0,0.20)}
+.hero-body h1{font-size:24px;font-weight:900;color:#1e2235;line-height:1.2;margin-bottom:6px}
+.hero-body .dev{font-size:14px;color:var(--fg2);font-weight:700;margin-bottom:10px}
+.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;
+  border-radius:20px;font-size:12px;font-weight:800}
+.badge-platform{background:#eef3fd;color:#1B3C87}
+.badge-cat{background:#f0faf3;color:#1a7a3c}
+.badge-ver{background:#fdf4e0;color:#9a6300}
+
+/* ── description ── */
+.desc-box{margin:20px 20px 0;padding:18px;background:var(--white);
+  border-radius:var(--r);border:1.5px solid #e8edf5}
+.desc-box h3{font-size:11px;font-weight:800;color:var(--fg2);
+  letter-spacing:.9px;margin-bottom:8px}
+.desc-box p{font-size:14px;color:var(--fg2);line-height:1.75;font-weight:600}
+
+/* ── screenshot ── */
+.screenshot-wrap{margin:20px 20px 0}
+.screenshot-wrap h3{font-size:11px;font-weight:800;color:var(--fg2);
+  letter-spacing:.9px;margin-bottom:10px}
+.screenshot-img{width:100%;border-radius:var(--r);
+  border:1.5px solid #e8edf5;display:block}
+
+/* ── download buttons ── */
+.store-wrap{padding:20px 20px 0;display:flex;flex-direction:column;gap:12px}
+.store-btn{display:flex;align-items:center;gap:14px;padding:14px 20px;
+  border-radius:var(--r);text-decoration:none;font-weight:800;
+  box-shadow:0 4px 20px rgba(0,0,0,0.10);transition:opacity .15s}
+.store-btn:hover{opacity:.88}
+.store-btn-play{background:#1e2235;color:#fff}
+.store-btn-apple{background:#000;color:#fff}
+.store-btn svg{width:28px;height:28px;flex-shrink:0}
+.store-btn-text small{font-size:11px;font-weight:600;opacity:.75;display:block}
+.store-btn-text strong{font-size:16px;font-weight:900;display:block;line-height:1.2}
+
+/* ── meta chips ── */
+.meta{display:flex;flex-wrap:wrap;gap:8px;padding:20px 20px 0}
+.chip{background:var(--white);border:1.5px solid #e8edf5;border-radius:20px;
+  padding:6px 14px;font-size:12px;font-weight:700;color:var(--fg2)}
+.chip span{color:var(--fg)}
+
+/* ── footer ── */
+.footer{text-align:center;padding:28px 20px 0;font-size:12px;
+  color:var(--fg2);font-weight:600}
+
+/* ── loader ── */
+.loader{text-align:center;padding:80px 20px;color:var(--fg2);
+  font-size:15px;font-weight:700}
+.spinner{width:36px;height:36px;border:4px solid #e8edf5;
+  border-top-color:var(--blue);border-radius:50%;
+  animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div id="root">
+    <div class="loader"><div class="spinner"></div>Loading…</div>
+  </div>
+</div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  // ── Replace with your real Supabase credentials ──
+  const SUPABASE_URL  = 'https://huuamwhzydfhqziniqnf.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1dWFtd2h6eWRmaHF6aW5pcW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MjAxOTUsImV4cCI6MjA4OTQ5NjE5NX0.-tTpabRI1b4enlUp8uIXMwmgGv2CLdFgE3vBk01Ye3Y';
+
+  const db   = createClient(SUPABASE_URL, SUPABASE_ANON);
+  const id   = new URLSearchParams(location.search).get('id');
+  const root = document.getElementById('root');
+
+  if (!id) {
+    root.innerHTML = '<div class="loader">Invalid link.</div>';
+  } else {
+    load(id);
+  }
+
+  async function load(slug) {
+    const { data, error } = await db
+      .from('app_qr_pages')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+
+    if (error || !data) {
+      console.error('Supabase error:', error);
+      root.innerHTML = '<div class="loader">App page not found.</div>';
+      return;
+    }
+
+    const c      = data.theme_color || '#3B7DD8';
+    const cLight = hexToRgba(c, 0.08);
+    document.title = `${data.app_name} — App`;
+
+    // ── Platform store buttons ──────────────────────────────────────────────
+    const hasPlay  = data.play_store_url && data.play_store_url.trim() !== '';
+    const hasApple = data.app_store_url  && data.app_store_url.trim()  !== '';
+
+    const playBtn = hasPlay ? `
+      <a class="store-btn store-btn-play" href="${esc(data.play_store_url)}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="white">
+          <path d="M3.18 23.76a2 2 0 0 0 2.24-.22l.08-.06 10.29-5.94-2.93-2.93L3.18 23.76z"/>
+          <path d="M22.17 10.43A2 2 0 0 0 21 8.87L18.7 7.6l-3.24 3.24 3.24 3.24 2.31-1.3a2 2 0 0 0 1.16-2.35z"/>
+          <path d="M2.07 1.25A2 2 0 0 0 2 2v20a2 2 0 0 0 .07.75l.08.08 11.2-11.2v-.26L2.15 1.17z"/>
+          <path d="M15.54 8.17 5.5.47A2 2 0 0 0 3.18.24L12.86 9.9l2.68-1.73z"/>
+        </svg>
+        <div class="store-btn-text">
+          <small>GET IT ON</small>
+          <strong>Google Play</strong>
+        </div>
+      </a>` : '';
+
+    const appleBtn = hasApple ? `
+      <a class="store-btn store-btn-apple" href="${esc(data.app_store_url)}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="white">
+          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+        </svg>
+        <div class="store-btn-text">
+          <small>DOWNLOAD ON THE</small>
+          <strong>App Store</strong>
+        </div>
+      </a>` : '';
+
+    // ── Hero background ─────────────────────────────────────────────────────
+    const heroBg = data.screenshot_url
+      ? `<img class="hero-bg" src="${esc(data.screenshot_url)}" alt="screenshot" style="filter:blur(18px) brightness(0.6);transform:scale(1.1)"/>`
+      : `<div class="hero-bg-placeholder" style="background:${c}"></div>`;
+
+    // ── App icon ────────────────────────────────────────────────────────────
+    const appIcon = data.icon_url
+      ? `<img class="app-icon" src="${esc(data.icon_url)}" alt="${esc(data.app_name)} icon"/>`
+      : `<div class="app-icon-fallback" style="background:${c}">📱</div>`;
+
+    // ── Platform badge ──────────────────────────────────────────────────────
+    const platformIcon = data.platform === 'Android' ? '🤖'
+      : data.platform === 'iOS' ? '🍎' : '📱';
+
+    // ── Screenshot section ──────────────────────────────────────────────────
+    const screenshotSection = data.screenshot_url ? `
+      <div class="screenshot-wrap">
+        <h3>SCREENSHOT</h3>
+        <img class="screenshot-img" src="${esc(data.screenshot_url)}" alt="App screenshot"/>
+      </div>` : '';
+
+    // ── Description section ─────────────────────────────────────────────────
+    const descSection = data.description ? `
+      <div class="desc-box">
+        <h3>ABOUT THIS APP</h3>
+        <p>${esc(data.description)}</p>
+      </div>` : '';
+
+    root.innerHTML = `
+      <div class="hero">
+        ${heroBg}
+        <div class="hero-body">
+          <div class="app-icon-wrap">${appIcon}</div>
+          <h1>${esc(data.app_name)}</h1>
+          ${data.developer_name ? `<p class="dev">by ${esc(data.developer_name)}</p>` : ''}
+          <div class="badges">
+            <span class="badge badge-platform">${platformIcon} ${esc(data.platform || 'App')}</span>
+            ${data.category ? `<span class="badge badge-cat">🏷️ ${esc(data.category)}</span>` : ''}
+            ${data.version  ? `<span class="badge badge-ver">v${esc(data.version)}</span>`    : ''}
+          </div>
+        </div>
+      </div>
+
+      <div class="store-wrap">
+        ${playBtn}
+        ${appleBtn}
+      </div>
+
+      ${descSection}
+
+      ${screenshotSection}
+
+      <div class="meta">
+        ${data.platform      ? `<div class="chip">📱 Platform <span>${esc(data.platform)}</span></div>`       : ''}
+        ${data.category      ? `<div class="chip">🏷️ Category <span>${esc(data.category)}</span></div>`      : ''}
+        ${data.version       ? `<div class="chip">🔖 Version <span>${esc(data.version)}</span></div>`         : ''}
+        ${data.developer_name? `<div class="chip">👤 Developer <span>${esc(data.developer_name)}</span></div>`: ''}
+      </div>
+
+      <div class="footer">Scan QR to share this app</div>
+    `;
+
+    // Apply theme color to CSS variable
+    document.documentElement.style.setProperty('--blue', c);
+  }
+
+  function esc(s = '') {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${alpha})`;
+  }
+</script>
+</body>
+</html>
