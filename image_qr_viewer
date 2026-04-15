@@ -230,8 +230,8 @@ footer a{color:var(--accent);text-decoration:none}
 // When hosted on Vercel, the slug comes from the URL path: /qr/SLUG
 // The page fetches its config from Supabase REST API.
 
-var SUPABASE_URL  = 'YOUR_SUPABASE_PROJECT_URL';   // e.g. https://xxxx.supabase.co
-var SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY';
+var SUPABASE_URL  = 'https://huuamwhzydfhqziniqnf.supabase.co';   // e.g. https://xxxx.supabase.co
+var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1dWFtd2h6eWRmaHF6aW5pcW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MjAxOTUsImV4cCI6MjA4OTQ5NjE5NX0.-tTpabRI1b4enlUp8uIXMwmgGv2CLdFgE3vBk01Ye3Y';
 
 var images       = [];
 var currentLb    = 0;
