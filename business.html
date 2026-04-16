@@ -226,14 +226,21 @@ window.addEventListener('DOMContentLoaded', async function(){
 
 // ── Slug extraction ────────────────────────────────────────────────────────
 function getSlug(){
+  var params = new URLSearchParams(window.location.search);
+  
+  // ✅ ?id= pehle check karo
+  if(params.get('id')) return params.get('id');
+  
+  // Fallback
+  if(params.get('slug')) return params.get('slug');
+  
   var path = window.location.pathname;
   var parts = path.split('/').filter(Boolean);
-  // /business/SLUG  or  /qr/SLUG  or  just last segment
   if(parts.length >= 2) return parts[parts.length-1];
   if(parts.length === 1) return parts[0];
-  return new URLSearchParams(window.location.search).get('slug');
+  
+  return null;
 }
-
 // ── Fetch from Supabase ────────────────────────────────────────────────────
 async function fetchPage(slug){
   var res = await fetch(
