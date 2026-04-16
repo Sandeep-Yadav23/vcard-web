@@ -260,14 +260,21 @@ async function init(){
 }
 
 function getSlug(){
-  // Supports:  /qr/SLUG  or  ?slug=SLUG  or  just the last path segment
+  const params = new URLSearchParams(window.location.search);
+  
+  // ✅ ?id= check karo pehle
+  if(params.get('id')) return params.get('id');
+  
+  // Fallback
+  if(params.get('slug')) return params.get('slug');
+  
   const path = window.location.pathname;
   const parts = path.split('/').filter(Boolean);
   if(parts.length >= 2 && parts[0]==='qr') return parts[1];
   if(parts.length >= 1) return parts[parts.length-1];
-  return new URLSearchParams(window.location.search).get('slug');
+  
+  return null;
 }
-
 async function fetchConfig(slug){
   const res = await fetch(
     SUPABASE_URL + '/rest/v1/image_qr_pages?slug=eq.' + encodeURIComponent(slug) + '&select=*&limit=1',
