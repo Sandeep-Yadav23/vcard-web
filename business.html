@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1"/>
+<meta name="theme-color" id="theme-meta" content="#447FB6"/>
+<title id="page-title">Business Page</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ── Reset ── */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--p:#447FB6;--b:#E91E63;--surface:#f5f5f8;--card:#fff;--fg:#1a1a2e;--fg2:#555;--r:14px;--sh:0 2px 12px rgba(0,0,0,.07)}
+body{font-family:'Inter',sans-serif;background:var(--surface);color:var(--fg);min-height:100vh}
+
+/* ── Splash/Welcome screen ── */
+#splash{position:fixed;inset:0;background:var(--p);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s ease}
+#splash.hide{opacity:0;pointer-events:none}
+#splash-logo{width:110px;height:110px;object-fit:contain;border-radius:18px;margin-bottom:18px;box-shadow:0 8px 32px rgba(0,0,0,0.25)}
+#splash-name{color:rgba(255,255,255,.85);font-size:15px;font-weight:500;letter-spacing:.5px}
+.spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.25);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Hero banner ── */
+.hero{width:100%;min-height:200px;position:relative;overflow:hidden;background:var(--p)}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.65))}
+.hero-content{position:relative;max-width:520px;margin:0 auto;padding:60px 20px 28px}
+.hero-company{color:rgba(255,255,255,.75);font-size:13px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px}
+.hero h1{color:white;font-size:28px;font-weight:800;line-height:1.2}
+.hero-sub{color:rgba(255,255,255,.8);font-size:14px;margin-top:6px;line-height:1.5}
+
+/* ── Main wrapper ── */
+.wrap{max-width:520px;margin:0 auto;padding:16px 16px 48px}
+
+/* ── Cards ── */
+.card{background:var(--card);border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--sh)}
+.card-title{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:700;color:var(--fg);margin-bottom:14px;padding-bottom:10px;border-bottom:.5px solid #f0f0f0}
+.card-icon{width:34px;height:34px;border-radius:9px;background:#f0f4ff;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+
+/* ── Summary & CTA ── */
+.summary-text{font-size:14px;color:var(--fg2);line-height:1.75}
+.cta-btn{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding:15px;border-radius:12px;background:var(--b);color:white;font-size:15px;font-weight:700;text-decoration:none;letter-spacing:.3px;transition:opacity .15s,transform .1s}
+.cta-btn:hover{opacity:.9;transform:translateY(-1px)}
+.cta-btn:active{transform:scale(.98)}
+
+/* ── Opening hours ── */
+.hours-table{width:100%;border-collapse:collapse}
+.hours-row{border-bottom:.5px solid #f5f5f5}
+.hours-row:last-child{border:none}
+.hours-day{font-size:13px;font-weight:600;padding:8px 0;color:var(--fg);width:50%}
+.hours-time{font-size:13px;color:var(--fg2);padding:8px 0;text-align:right}
+.closed{color:#bbb}
+
+/* ── Address ── */
+.address-line{font-size:14px;color:var(--fg2);line-height:1.8}
+.map-link{display:inline-flex;align-items:center;gap:6px;margin-top:12px;color:var(--p);font-size:13px;font-weight:600;text-decoration:none}
+.map-link:hover{opacity:.8}
+
+/* ── Amenities ── */
+.amenities{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.amenity-pill{background:#f0f4ff;color:var(--p);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px}
+
+/* ── Contact rows ── */
+.contact-list{display:flex;flex-direction:column;gap:2px}
+.contact-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:.5px solid #f5f5f5}
+.contact-row:last-child{border:none}
+.c-ico{width:36px;height:36px;border-radius:10px;background:#f0f4ff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.c-info{display:flex;flex-direction:column}
+.c-label{font-size:11px;color:#999;font-weight:500}
+.c-value{font-size:13px;font-weight:600;color:var(--fg)}
+.c-value a{color:var(--p);text-decoration:none}
+
+/* ── Social media ── */
+.social-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.social-btn{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:22px;background:#f5f5f8;border:.5px solid #e5e5e5;font-size:13px;font-weight:600;color:var(--fg);text-decoration:none;transition:background .15s}
+.social-btn:hover{background:#ececec}
+
+/* ── About section ── */
+.about-text{font-size:14px;color:var(--fg2);line-height:1.75}
+
+/* ── Powered by ── */
+footer{text-align:center;padding:20px 16px;color:#bbb;font-size:12px}
+footer a{color:var(--p);text-decoration:none}
+
+/* ── Error state ── */
+#error-state{display:none;text-align:center;padding:80px 24px;max-width:400px;margin:0 auto}
+#error-state .err-ico{font-size:52px;margin-bottom:14px}
+#error-state h2{font-size:20px;margin-bottom:8px;color:var(--fg)}
+#error-state p{font-size:14px;color:var(--fg2)}
+
+/* ── Main content hidden until loaded ── */
+#page-content{display:none}
+</style>
+</head>
+<body>
+
+<!-- Welcome / Splash screen -->
+<div id="splash">
+  <div id="splash-inner">
+    <div class="spinner" id="splash-spinner"></div>
+  </div>
+  <div id="splash-name"></div>
+</div>
+
+<!-- Error state -->
+<div id="error-state">
+  <div class="err-ico">⚠️</div>
+  <h2>Page not found</h2>
+  <p>This business page may have been removed or the link is incorrect.</p>
+</div>
+
+<!-- Main page content -->
+<div id="page-content">
+
+  <!-- Hero / Banner -->
+  <div class="hero" id="hero">
+    <div class="hero-bg" id="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-company" id="hero-company"></div>
+      <h1 id="hero-headline">Business Page</h1>
+      <div class="hero-sub" id="hero-sub" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- Basic info + CTA -->
+    <div class="card" id="card-basic">
+      <p class="summary-text" id="summary-text"></p>
+      <a class="cta-btn" id="cta-btn" href="#" target="_blank" rel="noopener" style="display:none">
+        <span id="cta-label">Visit Website</span>
+      </a>
+    </div>
+
+    <!-- Opening hours -->
+    <div class="card" id="card-hours" style="display:none">
+      <div class="card-title">
+        <div class="card-icon">🕐</div>
+        Opening Hours
+      </div>
+      <table class="hours-table" id="hours-table"></table>
+    </div>
+
+    <!-- Address & Amenities -->
+    <div class="card" id="card-address" style="display:none">
+      <div class="card-title">
+        <div class="card-icon">📍</div>
+        Address & Location
+      </div>
+      <div class="address-line" id="address-text"></div>
+      <a class="map-link" id="map-link" href="#" target="_blank" rel="noopener" style="display:none">
+        📌 Open in Maps
+      </a>
+      <div class="amenities" id="amenities-wrap"></div>
+    </div>
+
+    <!-- About & Contact -->
+    <div class="card" id="card-contact">
+      <div class="card-title">
+        <div class="card-icon">ℹ️</div>
+        About & Contact
+      </div>
+      <div class="about-text" id="about-text" style="display:none;margin-bottom:14px"></div>
+      <div class="contact-list" id="contact-list"></div>
+    </div>
+
+    <!-- Social media -->
+    <div class="card" id="card-social" style="display:none">
+      <div class="card-title">
+        <div class="card-icon">📣</div>
+        Follow Us
+      </div>
+      <div class="social-grid" id="social-grid"></div>
+    </div>
+
+  </div>
+
+  <footer>Powered by <a href="#">QRPulse</a></footer>
+</div>
+
+<script>
+// ── Supabase config ────────────────────────────────────────────────────────
+var SUPABASE_URL  = 'https://huuamwhzydfhqziniqnf.supabase.co';
+var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1dWFtd2h6eWRmaHF6aW5pcW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MjAxOTUsImV4cCI6MjA4OTQ5NjE5NX0.-tTpabRI1b4enlUp8uIXMwmgGv2CLdFgE3vBk01Ye3Y';
+
+// ── Social platform icons ──────────────────────────────────────────────────
+var SOCIAL_ICONS = {
+  'Website':'🌐','Facebook':'📘','X (Twitter)':'✖️','Instagram':'📸',
+  'WhatsApp':'💬','TikTok':'🎵','Snapchat':'👻','YouTube':'▶️',
+  'Telegram':'✈️','Messenger':'💭','Yelp':'⭐','Google':'🔍',
+  'Pinterest':'📌','LinkedIn':'💼','Xing':'✳️','VK':'🔷',
+  'Tripadvisor':'🦉','Line':'💚','Reddit':'🤖','Tumblr':'📝',
+  'GitHub':'🐙','Skype':'📞','DoorDash':'🚗','GrubHub':'🍔',
+  'Uber Eats':'🛵','Soundcloud':'🎧','Spotify':'🎵','Apple Music':'🎼',
+};
+
+var AMENITY_ICONS = {
+  'wifi':'📶','seating':'🪑','accessible':'♿','restroom':'🚻','stroller':'👶',
+  'pets':'🐾','parking':'🅿️','bus':'🚌','car':'🚗','sleep':'🛏','cafe':'☕',
+  'bar':'🍸','restaurant':'🍽','delivery':'🛵',
+};
+
+var DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+// ── Boot ──────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async function(){
+  var slug = getSlug();
+  if(!slug){ showError(); hideSplash(300); return; }
+
+  try {
+    var data = await fetchPage(slug);
+    if(!data){ showError(); hideSplash(300); return; }
+    applyTheme(data);
+    renderPage(data);
+    trackScan(slug);
+    document.getElementById('page-content').style.display = 'block';
+    hideSplash(data.logo_url ? 1800 : 700);
+  } catch(err){
+    console.error(err);
+    showError();
+    hideSplash(300);
+  }
+});
+
+// ── Slug extraction ────────────────────────────────────────────────────────
+function getSlug(){
+  var path = window.location.pathname;
+  var parts = path.split('/').filter(Boolean);
+  // /business/SLUG  or  /qr/SLUG  or  just last segment
+  if(parts.length >= 2) return parts[parts.length-1];
+  if(parts.length === 1) return parts[0];
+  return new URLSearchParams(window.location.search).get('slug');
+}
+
+// ── Fetch from Supabase ────────────────────────────────────────────────────
+async function fetchPage(slug){
+  var res = await fetch(
+    SUPABASE_URL + '/rest/v1/business_pages?slug=eq.' + encodeURIComponent(slug) + '&select=*&limit=1',
+    { headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + SUPABASE_ANON } }
+  );
+  if(!res.ok) return null;
+  var rows = await res.json();
+  return rows && rows.length ? rows[0] : null;
+}
+
+// ── Track scan ─────────────────────────────────────────────────────────────
+async function trackScan(slug){
+  try {
+    await fetch(SUPABASE_URL + '/rest/v1/rpc/increment_business_scan_count', {
+      method:'POST',
+      headers:{ apikey:SUPABASE_ANON, Authorization:'Bearer '+SUPABASE_ANON, 'Content-Type':'application/json' },
+      body: JSON.stringify({ p_slug: slug })
+    });
+    await fetch(SUPABASE_URL + '/rest/v1/business_scans', {
+      method:'POST',
+      headers:{ apikey:SUPABASE_ANON, Authorization:'Bearer '+SUPABASE_ANON, 'Content-Type':'application/json', Prefer:'return=minimal' },
+      body: JSON.stringify({ page_slug: slug, user_agent: navigator.userAgent })
+    });
+  } catch(e){}
+}
+
+// ── Apply theme colors ─────────────────────────────────────────────────────
+function applyTheme(d){
+  var root = document.documentElement;
+  if(d.primary_color){ root.style.setProperty('--p', d.primary_color); document.getElementById('theme-meta').content = d.primary_color; }
+  if(d.button_color)  root.style.setProperty('--b', d.button_color);
+}
+
+// ── Render full page ───────────────────────────────────────────────────────
+function renderPage(d){
+
+  // Splash logo
+  if(d.logo_url){
+    var sp = document.getElementById('splash-inner');
+    sp.innerHTML = '<img id="splash-logo" src="'+esc(d.logo_url)+'" alt="logo"/>';
+  }
+  setText('splash-name', d.company || '');
+  document.title = d.company || d.headline || 'Business Page';
+  setText('page-title', d.company || 'Business Page');
+
+  // Hero
+  if(d.banner_url) document.getElementById('hero-bg').style.backgroundImage = 'url("'+esc(d.banner_url)+'")';
+  document.getElementById('hero').style.background = d.banner_url ? '' : 'var(--p)';
+  setText('hero-company', d.company || '');
+  setText('hero-headline', d.headline || '');
+  if(d.summary){ show('hero-sub'); setText('hero-sub', d.summary); }
+
+  // Basic info card
+  var summaryEl = document.getElementById('summary-text');
+  summaryEl.textContent = d.summary || '';
+  if(!d.summary) summaryEl.style.display = 'none';
+
+  // CTA
+  if(d.cta_label && d.cta_url){
+    var ctaBtn = document.getElementById('cta-btn');
+    ctaBtn.href = d.cta_url;
+    setText('cta-label', d.cta_label);
+    ctaBtn.style.display = 'flex';
+  }
+
+  // Opening hours
+  if(d.hours && Object.keys(d.hours).length){
+    var anyOpen = false;
+    var tbody = '';
+    DAYS.forEach(function(day){
+      var h = d.hours[day];
+      if(h && h.isOpen){
+        anyOpen = true;
+        tbody += '<tr class="hours-row"><td class="hours-day">'+day+'</td><td class="hours-time">'+h.open+' – '+h.close+'</td></tr>';
+      }
+    });
+    if(anyOpen){
+      document.getElementById('hours-table').innerHTML = tbody;
+      show('card-hours');
+    }
+  }
+
+  // Address
+  if(d.address && d.address.trim()){
+    document.getElementById('address-text').innerHTML = d.address.replace(/,/g, ',<br/>');
+    // Google Maps link
+    var mapLink = document.getElementById('map-link');
+    mapLink.href = 'https://maps.google.com/?q=' + encodeURIComponent(d.address);
+    mapLink.style.display = 'inline-flex';
+    show('card-address');
+  }
+
+  // Amenities
+  if(d.amenities && d.amenities.length){
+    var awrap = document.getElementById('amenities-wrap');
+    d.amenities.forEach(function(k){
+      var pill = document.createElement('div');
+      pill.className = 'amenity-pill';
+      pill.innerHTML = (AMENITY_ICONS[k]||'✓') + ' ' + k.charAt(0).toUpperCase()+k.slice(1);
+      awrap.appendChild(pill);
+    });
+    show('card-address');
+  }
+
+  // About
+  if(d.about){
+    var aboutEl = document.getElementById('about-text');
+    aboutEl.textContent = d.about;
+    aboutEl.style.display = 'block';
+  }
+
+  // Contact list
+  var contactList = document.getElementById('contact-list');
+  var contactItems = [];
+  if(d.contact_name) contactItems.push(['👤','Name', d.contact_name, null]);
+  if(d.phone)        contactItems.push(['📞','Phone', d.phone, 'tel:'+d.phone]);
+  if(d.email)        contactItems.push(['✉️','Email', d.email, 'mailto:'+d.email]);
+  if(d.website)      contactItems.push(['🌐','Website', d.website, d.website]);
+
+  contactItems.forEach(function(item){
+    var row = document.createElement('div');
+    row.className = 'contact-row';
+    var valHtml = item[3]
+      ? '<a href="'+esc(item[3])+'" target="_blank">'+esc(item[2])+'</a>'
+      : esc(item[2]);
+    row.innerHTML = '<div class="c-ico">'+item[0]+'</div><div class="c-info"><div class="c-label">'+item[1]+'</div><div class="c-value">'+valHtml+'</div></div>';
+    contactList.appendChild(row);
+  });
+
+  // Social media
+  if(d.social_links && Object.keys(d.social_links).length){
+    var grid = document.getElementById('social-grid');
+    Object.entries(d.social_links).forEach(function(entry){
+      var platform = entry[0], url = entry[1];
+      var btn = document.createElement('a');
+      btn.className = 'social-btn';
+      btn.href = url; btn.target = '_blank'; btn.rel = 'noopener';
+      btn.innerHTML = (SOCIAL_ICONS[platform]||'🔗') + ' ' + esc(platform);
+      grid.appendChild(btn);
+    });
+    show('card-social');
+  }
+}
+
+// ── Utilities ──────────────────────────────────────────────────────────────
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function setText(id, val){ var el=document.getElementById(id); if(el) el.textContent=val; }
+function show(id){ var el=document.getElementById(id); if(el) el.style.display='block'; }
+function showError(){ show('error-state'); }
+function hideSplash(delay){
+  setTimeout(function(){
+    var s = document.getElementById('splash');
+    s.classList.add('hide');
+    setTimeout(function(){ s.style.display='none'; }, 500);
+  }, delay);
+}
+</script>
+</body>
+</html>
