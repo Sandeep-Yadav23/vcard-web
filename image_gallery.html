@@ -308,7 +308,7 @@ body {
   text-align: center;
 }
 
-/* modern lightbox (glassmorph) */
+/* modern lightbox (glassmorph) - SAVE BUTTON REMOVED */
 .lb-overlay {
   display: none;
   position: fixed;
@@ -406,28 +406,6 @@ body {
   font-weight: 500;
   color: white;
   letter-spacing: 0.3px;
-}
-.lb-dl {
-  position: fixed;
-  bottom: 28px;
-  right: 24px;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(12px);
-  border: none;
-  padding: 10px 20px;
-  border-radius: 40px;
-  color: white;
-  font-weight: 500;
-  font-size: 0.8rem;
-  cursor: pointer;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  transition: 0.2s;
-}
-.lb-dl:hover {
-  background: var(--accent);
-  transform: translateY(-2px);
 }
 
 /* CTA card */
@@ -545,7 +523,7 @@ footer a {
   <button class="lb-arrow lb-prev" id="lbPrevBtn">‹</button>
   <button class="lb-arrow lb-next" id="lbNextBtn">›</button>
   <div class="lb-counter" id="lb-counter">0 / 0</div>
-  <button class="lb-dl" id="lbDownloadBtn">⬇ Save image</button>
+  <!-- SAVE BUTTON REMOVED -->
 </div>
 
 <footer>
@@ -707,7 +685,7 @@ function updateSlideNumber() {
   if (numEl) numEl.innerText = `${currentSlideIndex+1} / ${images.length}`;
 }
 
-// ========== LIGHTBOX with gesture & download ==========
+// ========== LIGHTBOX with gesture (SAVE BUTTON REMOVED) ==========
 function buildLightboxContent() {
   const lbContent = document.getElementById('lb-content');
   lbContent.innerHTML = '';
@@ -742,16 +720,7 @@ function updateLightboxImages() {
   const counter = document.getElementById('lb-counter');
   if (counter) counter.innerText = `${currentLbIndex+1} / ${images.length}`;
 }
-function downloadCurrentLightbox() {
-  const activeImg = document.querySelector('.lb-img.active');
-  if (!activeImg) return;
-  const url = activeImg.dataset.url || activeImg.src;
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `gallery_${currentLbIndex+1}.jpg`;
-  a.target = '_blank';
-  a.click();
-}
+// downloadCurrentLightbox function completely removed
 
 // ========== LAYOUT SWITCH ==========
 function setActiveLayout(layout) {
@@ -839,12 +808,11 @@ async function init() {
 window.addEventListener('DOMContentLoaded', () => {
   init();
   setTimeout(() => {
-    // attach lightbox events
+    // attach lightbox events (no download button listener)
     const lightbox = document.getElementById('lightbox');
     document.getElementById('lbCloseBtn')?.addEventListener('click', closeLightbox);
     document.getElementById('lbPrevBtn')?.addEventListener('click', () => lbNavigate(-1));
     document.getElementById('lbNextBtn')?.addEventListener('click', () => lbNavigate(1));
-    document.getElementById('lbDownloadBtn')?.addEventListener('click', downloadCurrentLightbox);
     lightbox?.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
     
     // layout switcher
