@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Loading Audio...</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#ff7f72;--s:#544f71;--bg:#f5f6fa}
+body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+
+/* ── Loading ── */
+.loading-screen{text-align:center;padding:40px 20px}
+.spinner{width:52px;height:52px;border:4px solid #e8edf5;border-top:4px solid var(--s);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-screen h2{font-size:18px;font-weight:800;color:#1e2235;margin-bottom:6px}
+.loading-screen p{font-size:14px;color:#8a93a8;font-weight:600}
+
+/* ── Error ── */
+.error-screen{text-align:center;padding:40px 20px;display:none}
+.error-icon{font-size:52px;margin-bottom:12px}
+.error-screen h2{font-size:18px;font-weight:800;color:#1e2235;margin-bottom:8px}
+.error-screen p{font-size:14px;color:#8a93a8;font-weight:600}
+
+/* ── Card ── */
+.card{background:#fff;border-radius:24px;max-width:400px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.12);overflow:hidden;display:none}
+
+/* ── Header ── */
+.header{background:linear-gradient(135deg,var(--s),var(--p));padding:32px 24px 48px;text-align:center;position:relative}
+.header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:32px;background:#fff;border-radius:32px 32px 0 0}
+.logo-wrap{display:flex;justify-content:center;margin-bottom:14px}
+.logo{width:90px;height:90px;border-radius:50%;border:4px solid rgba(255,255,255,.4);object-fit:cover;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.logo-placeholder{width:90px;height:90px;border-radius:50%;border:4px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:40px;background:rgba(255,255,255,.15)}
+.header h1{color:#fff;font-size:22px;font-weight:900;line-height:1.25;margin-bottom:4px}
+.header .artist{color:rgba(255,255,255,.8);font-size:14px;font-weight:600}
+
+/* ── Equalizer ── */
+.eq{display:flex;align-items:flex-end;justify-content:center;gap:3px;height:24px;margin-top:10px}
+.eq span{width:4px;border-radius:3px;background:rgba(255,255,255,.7);animation:eq .8s ease-in-out infinite alternate}
+.eq span:nth-child(1){animation-delay:0s}
+.eq span:nth-child(2){animation-delay:.15s}
+.eq span:nth-child(3){animation-delay:.3s}
+.eq span:nth-child(4){animation-delay:.45s}
+.eq.paused span{animation-play-state:paused}
+@keyframes eq{from{height:4px}to{height:20px}}
+
+/* ── Body ── */
+.body{padding:24px}
+
+/* ── Player ── */
+.player{background:var(--bg);border-radius:16px;padding:18px;margin-bottom:16px}
+.player-controls{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.play-btn{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--s),var(--p));border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(84,79,113,.35);transition:.2s;flex-shrink:0}
+.play-btn:hover{transform:scale(1.07)}
+.play-btn:active{transform:scale(0.97)}
+.track-info{flex:1;min-width:0}
+.track-title{font-size:15px;font-weight:800;color:#1e2235;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track-time{font-size:12px;color:#8a93a8;font-weight:600;margin-top:3px}
+
+/* ── Waveform ── */
+.progress-wrap{position:relative;height:52px;cursor:pointer;user-select:none}
+.waveform{display:flex;align-items:center;gap:2px;height:100%;padding:4px 0}
+.bar{flex:1;border-radius:3px;background:#e2e6ef;transition:background .08s;min-height:4px}
+.bar.played{background:linear-gradient(to top,var(--s),var(--p))}
+.thumb{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;background:var(--p);box-shadow:0 2px 8px rgba(0,0,0,.25);pointer-events:none}
+
+/* ── Volume ── */
+.volume-row{display:flex;align-items:center;gap:10px;margin-top:12px}
+.vol-icon{font-size:18px;cursor:pointer;flex-shrink:0}
+.vol-slider{flex:1;-webkit-appearance:none;height:4px;border-radius:4px;background:#e2e6ef;outline:none;cursor:pointer}
+.vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--p);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+
+/* ── Buttons ── */
+.btn-row{display:flex;gap:10px}
+.cta-btn,.dl-btn{flex:1;padding:14px 10px;border-radius:50px;font-size:14px;font-weight:800;text-align:center;text-decoration:none;color:#fff;transition:.2s;font-family:'Nunito',sans-serif;display:block;border:none;cursor:pointer}
+.cta-btn:hover,.dl-btn:hover{transform:translateY(-2px);opacity:.9}
+.cta-btn:active,.dl-btn:active{transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="spinner"></div>
+  <h2>Loading Audio...</h2>
+  <p>Preparing your track, please wait.</p>
+</div>
+
+<div class="error-screen" id="errorScreen">
+  <div class="error-icon">🎵</div>
+  <h2>Track Not Found</h2>
+  <p>This QR code may be invalid or the audio has been removed.</p>
+</div>
+
+<div class="card" id="card">
+  <div class="header" id="header">
+    <div class="logo-wrap" id="logoWrap"></div>
+    <h1 id="trackTitle">Track</h1>
+    <div class="artist" id="artistName" style="display:none"></div>
+    <div class="eq paused" id="eq">
+      <span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+  <div class="body">
+    <div class="player">
+      <div class="player-controls">
+        <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
+        <div class="track-info">
+          <div class="track-title" id="playerTitle">Track</div>
+          <div class="track-time" id="timeDisplay">0:00 / 0:00</div>
+        </div>
+      </div>
+      <div class="progress-wrap" id="progressWrap">
+        <div class="waveform" id="waveform"></div>
+        <div class="thumb" id="thumb" style="left:0%"></div>
+      </div>
+      <div class="volume-row">
+        <span class="vol-icon" id="volIcon" onclick="toggleMute()">🔊</span>
+        <input type="range" class="vol-slider" id="volSlider"
+               min="0" max="1" step="0.01" value="1"
+               oninput="setVolume(this.value)"/>
+      </div>
+    </div>
+    <div class="btn-row" id="btnRow"></div>
+  </div>
+</div>
+
+<audio id="audio" preload="metadata"></audio>
+
+<script>
+// ─────────────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────────────
+var SUPABASE_URL  = 'https://huuamwhzydfhqziniqnf.supabase.co';
+var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1dWFtd2h6eWRmaHF6aW5pcW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MjAxOTUsImV4cCI6MjA4OTQ5NjE5NX0.-tTpabRI1b4enlUp8uIXMwmgGv2CLdFgE3vBk01Ye3Y';
+var BUCKET        = 'audio-pages';
+var BARS          = 42;
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+(async function () {
+  var slug = new URLSearchParams(window.location.search).get('id');
+  if (!slug) { showError(); return; }
+
+  try {
+    var jsonUrl = SUPABASE_URL
+      + '/storage/v1/object/public/' + BUCKET
+      + '/audio/' + slug + '/data.json';
+
+    var res = await fetch(jsonUrl, {
+      headers: { 'apikey': SUPABASE_ANON }
+    });
+
+    if (!res.ok) { showError(); return; }
+
+    var d = await res.json();
+    renderPlayer(d);
+
+  } catch (e) {
+    console.error(e);
+    showError();
+  }
+})();
+
+// ─────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────
+function renderPlayer(d) {
+  // CSS vars
+  var p = d.primaryColor   || '#ff7f72';
+  var s = d.secondaryColor || '#544f71';
+  var bg = d.bgColor       || '#f5f6fa';
+  document.documentElement.style.setProperty('--p',  p);
+  document.documentElement.style.setProperty('--s',  s);
+  document.documentElement.style.setProperty('--bg', bg);
+  document.body.style.background = bg;
+  document.title = d.title || 'Audio Player';
+
+  // Logo
+  var logoWrap = document.getElementById('logoWrap');
+  if (d.logoUrl) {
+    logoWrap.innerHTML = '<img src="'+esc(d.logoUrl)+'" class="logo" alt="Logo" loading="lazy"/>';
+  } else {
+    logoWrap.innerHTML = '<div class="logo-placeholder">🎵</div>';
+  }
+
+  // Titles
+  document.getElementById('trackTitle').textContent  = d.title    || 'Track';
+  document.getElementById('playerTitle').textContent = d.title    || 'Track';
+  var artistEl = document.getElementById('artistName');
+  if (d.moreInfo) {
+    artistEl.textContent    = d.moreInfo;
+    artistEl.style.display  = 'block';
+  }
+
+  // Audio src
+  var audio = document.getElementById('audio');
+  audio.src = d.audioUrl;
+
+  // Waveform bars
+  buildWaveform();
+
+  // Buttons
+  var btnRow = document.getElementById('btnRow');
+  var btns   = '';
+  if (d.addDownload && d.audioUrl) {
+    btns += '<a href="'+esc(d.audioUrl)+'" download class="dl-btn" style="background:'+esc(s)+'">⬇ Download</a>';
+  }
+  if (d.website) {
+    btns += '<a href="'+esc(d.website)+'" target="_blank" rel="noopener" class="cta-btn" style="background:'+esc(p)+'">'+esc(d.buttonLabel||'Visit Us')+'</a>';
+  }
+  btnRow.innerHTML = btns;
+
+  // Show card
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('card').style.display          = 'block';
+}
+
+// ─────────────────────────────────────────────
+// WAVEFORM
+// ─────────────────────────────────────────────
+function buildWaveform() {
+  var wf = document.getElementById('waveform');
+  wf.innerHTML = '';
+  for (var i = 0; i < BARS; i++) {
+    var b = document.createElement('div');
+    b.className = 'bar';
+    var h = 18 + Math.sin(i * 0.45) * 10 + Math.random() * 18;
+    b.style.height = h + 'px';
+    wf.appendChild(b);
+  }
+}
+
+// ─────────────────────────────────────────────
+// PLAYER LOGIC
+// ─────────────────────────────────────────────
+var audio   = document.getElementById('audio');
+var playBtn = document.getElementById('playBtn');
+var eq      = document.getElementById('eq');
+var muted   = false;
+
+function togglePlay() {
+  if (audio.paused) {
+    audio.play();
+    playBtn.textContent = '⏸';
+    eq.classList.remove('paused');
+  } else {
+    audio.pause();
+    playBtn.textContent = '▶';
+    eq.classList.add('paused');
+  }
+}
+
+function fmt(s) {
+  var m  = Math.floor(s / 60);
+  var ss = Math.floor(s % 60);
+  return m + ':' + (ss < 10 ? '0' : '') + ss;
+}
+
+function updateProgress() {
+  if (!audio.duration) return;
+  var pct  = audio.currentTime / audio.duration;
+  document.getElementById('thumb').style.left = (pct * 100) + '%';
+  document.getElementById('timeDisplay').textContent =
+    fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+  var bars   = document.querySelectorAll('.bar');
+  var played = Math.floor(pct * BARS);
+  bars.forEach(function (b, i) {
+    b.className = 'bar' + (i < played ? ' played' : '');
+  });
+}
+
+// Seek on waveform click
+document.getElementById('progressWrap').addEventListener('click', function (e) {
+  if (!audio.duration) return;
+  var rect = this.getBoundingClientRect();
+  var pct  = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  audio.currentTime = pct * audio.duration;
+});
+
+function setVolume(v) { audio.volume = v; }
+
+function toggleMute() {
+  muted = !muted;
+  audio.muted = muted;
+  document.getElementById('volIcon').textContent = muted ? '🔇' : '🔊';
+}
+
+audio.addEventListener('timeupdate',    updateProgress);
+audio.addEventListener('loadedmetadata', function () {
+  document.getElementById('timeDisplay').textContent = '0:00 / ' + fmt(audio.duration);
+});
+audio.addEventListener('ended', function () {
+  playBtn.textContent = '▶';
+  eq.classList.add('paused');
+});
+
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+function showError() {
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('errorScreen').style.display   = 'block';
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
