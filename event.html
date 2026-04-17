@@ -3,52 +3,308 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Event Page</title>
+<title>Loading Event...</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
+/* ── Reset ── */
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Nunito',sans-serif;background:#f5f6fa;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.loading{text-align:center;padding:40px 20px}
-.spinner{width:48px;height:48px;border:4px solid #e8edf5;border-top:4px solid #4f46e5;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
+:root{--p:#447fb6;--btn:#e91e63;--bg:#f5f6fa}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:#1e2235;min-height:100vh}
+
+/* ── Loading ── */
+.loading-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.spinner{width:52px;height:52px;border:4px solid #e8edf5;border-top:4px solid var(--p);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading h2{font-size:18px;font-weight:800;color:#1e2235;margin-bottom:6px}
-.loading p{font-size:14px;color:#8a93a8;font-weight:600}
-.error{text-align:center;padding:40px 20px}
-.error-icon{font-size:48px;margin-bottom:12px}
-.error h2{font-size:18px;font-weight:800;color:#1e2235;margin-bottom:6px}
-.error p{font-size:13px;color:#8a93a8;font-weight:600}
+.loading-screen h2{font-size:18px;font-weight:800;color:#1e2235;margin-bottom:6px}
+.loading-screen p{font-size:14px;color:#8a93a8;font-weight:600}
+
+/* ── Error ── */
+.error-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+.error-icon{font-size:56px;margin-bottom:16px}
+.error-screen h2{font-size:20px;font-weight:800;color:#1e2235;margin-bottom:8px}
+.error-screen p{font-size:14px;color:#8a93a8;font-weight:600;max-width:280px}
+
+/* ── Page ── */
+.page{max-width:520px;margin:0 auto;padding-bottom:100px;display:none}
+
+/* ── Banner ── */
+.banner{width:100%;aspect-ratio:16/9;overflow:hidden;background:var(--p);position:relative}
+.banner img{width:100%;height:100%;object-fit:cover;display:block}
+.banner-placeholder{width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--p),var(--p-dark,#2a5a8a))}
+.banner-text{color:#fff;font-size:26px;font-weight:900;text-align:center;padding:20px;line-height:1.3}
+
+/* ── Logo ── */
+.logo-wrap{display:flex;justify-content:center;margin-top:-32px;position:relative;z-index:2}
+.logo{width:68px;height:68px;border-radius:50%;border:3px solid #fff;object-fit:cover;box-shadow:0 4px 20px rgba(0,0,0,.18)}
+
+/* ── Hero ── */
+.hero{padding:16px 20px 0;text-align:center}
+.organizer{font-size:11px;color:#8a93a8;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
+.hero h1{font-size:24px;font-weight:900;color:#1e2235;line-height:1.25}
+.summary{font-size:14px;color:#5a6480;margin-top:10px;line-height:1.7;font-weight:600}
+
+/* ── CTA ── */
+.cta-wrap{padding:20px 20px 0;display:flex;justify-content:center}
+.cta-btn{display:inline-block;padding:15px 36px;border-radius:50px;color:#fff;font-weight:800;font-size:15px;text-decoration:none;background:var(--btn);box-shadow:0 4px 18px rgba(0,0,0,.18);transition:.2s;font-family:'Nunito',sans-serif}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.22)}
+.cta-btn:active{transform:translateY(0)}
+
+/* ── Sections ── */
+.section{padding:20px 20px 0}
+.section-title{font-size:12px;font-weight:800;color:#8a93a8;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px}
+
+/* ── Info Card ── */
+.info-card{background:#fff;border-radius:16px;padding:6px 16px;border:1.5px solid #e8edf5;box-shadow:0 2px 14px rgba(30,34,53,.06)}
+.info-row{display:flex;align-items:flex-start;gap:14px;padding:13px 0;border-bottom:1px solid #f0f2f8}
+.info-row:last-child{border-bottom:none}
+.info-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center;margin-top:1px}
+.info-label{font-size:14px;font-weight:800;display:block;color:#1e2235;margin-bottom:3px}
+.info-value{font-size:12px;color:#8a93a8;font-weight:600}
+
+/* ── Amenities ── */
+.amenities-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.amenity-item{background:#fff;border:1.5px solid #e8edf5;border-radius:14px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:11px;font-weight:700;color:#5a6480;text-align:center;transition:.2s}
+.amenity-item:hover{border-color:var(--p);color:var(--p);transform:translateY(-1px)}
+.amenity-emoji{font-size:24px}
+
+/* ── About ── */
+.about-box{background:#fff;border-radius:14px;padding:16px;border:1.5px solid #e8edf5;font-size:14px;color:#5a6480;line-height:1.8;font-weight:600;white-space:pre-wrap}
+
+/* ── Contact ── */
+.contact-card{background:#fff;border-radius:16px;border:1.5px solid #e8edf5;overflow:hidden}
+.contact-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #f0f2f8;font-size:14px;font-weight:600;color:#1e2235;text-decoration:none;transition:.15s}
+.contact-item:last-child{border-bottom:none}
+.contact-item:hover{background:#f8f9ff}
+.contact-emoji{font-size:18px;flex-shrink:0}
+
+/* ── Social ── */
+.social-row{display:flex;flex-wrap:wrap;gap:10px}
+.social-btn{display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:50px;color:#fff;font-size:13px;font-weight:700;text-decoration:none;transition:.2s;font-family:'Nunito',sans-serif}
+.social-btn:hover{transform:translateY(-2px);opacity:.88}
+
+/* ── Share FAB ── */
+.share-fab{position:fixed;bottom:24px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--btn);color:#fff;border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.24);display:flex;align-items:center;justify-content:center;z-index:100;transition:.2s}
+.share-fab:hover{transform:scale(1.08)}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e2235;color:#fff;padding:10px 20px;border-radius:50px;font-size:13px;font-weight:700;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap;z-index:200}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
-<div class="loading" id="loading">
+
+<!-- Loading -->
+<div class="loading-screen" id="loadingScreen">
   <div class="spinner"></div>
   <h2>Loading Event...</h2>
-  <p>Please wait while we fetch the event details.</p>
+  <p>Fetching event details for you</p>
 </div>
-<div class="error" id="error" style="display:none">
+
+<!-- Error -->
+<div class="error-screen" id="errorScreen" style="display:none">
   <div class="error-icon">🔍</div>
   <h2>Event Not Found</h2>
   <p>This QR code may be invalid or the event has been removed.</p>
 </div>
 
+<!-- Event Page (filled dynamically) -->
+<div class="page" id="page"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast">Link copied!</div>
+
 <script>
-(function(){
-  var SUPABASE_URL = 'https://huuamwhzydfhqziniqnf.supabase.co';
-  var BUCKET = 'event-pages';
+// ─────────────────────────────────────────────
+// CONFIG — paste your Supabase values here
+// ─────────────────────────────────────────────
+var SUPABASE_URL  = 'https://huuamwhzydfhqziniqnf.supabase.co';
+var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1dWFtd2h6eWRmaHF6aW5pcW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MjAxOTUsImV4cCI6MjA4OTQ5NjE5NX0.-tTpabRI1b4enlUp8uIXMwmgGv2CLdFgE3vBk01Ye3Y';
+var BUCKET        = 'event-pages';
 
-  var params = new URLSearchParams(window.location.search);
-  var slug = params.get('id');
+// ─────────────────────────────────────────────
+// EMOJI MAPS
+// ─────────────────────────────────────────────
+var AMENITY_EMOJI = {
+  restrooms:'🚻', stroller:'🍼', pets:'🐾', parking:'🅿️',
+  bus:'🚌', taxi:'🚕', hotel:'🛏️', cafe:'☕',
+  bar:'🍸', restaurant:'🍽️', wifi:'📶', accessible:'♿'
+};
+var SOCIAL_EMOJI = {
+  Facebook:'📘', Instagram:'📸', 'Twitter/X':'🐦',
+  YouTube:'▶️', LinkedIn:'💼', TikTok:'🎵', Website:'🌐'
+};
 
-  if(!slug){
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('error').style.display = 'block';
-    return;
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+(async function(){
+  var slug = new URLSearchParams(window.location.search).get('id');
+
+  if(!slug){ showError(); return; }
+
+  try {
+    // Fetch data.json from Supabase public storage
+    var jsonUrl = SUPABASE_URL + '/storage/v1/object/public/' + BUCKET
+                + '/events/' + slug + '/data.json';
+
+    var res = await fetch(jsonUrl, {
+      headers: { 'apikey': SUPABASE_ANON }
+    });
+
+    if(!res.ok){ showError(); return; }
+
+    var d = await res.json();
+    renderPage(d);
+
+  } catch(e) {
+    console.error(e);
+    showError();
+  }
+})();
+
+// ─────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────
+function renderPage(d){
+  // Set CSS vars
+  document.documentElement.style.setProperty('--p',   d.primaryColor || '#447fb6');
+  document.documentElement.style.setProperty('--btn', d.buttonColor  || '#e91e63');
+  document.documentElement.style.setProperty('--bg',  d.bgColor      || '#f5f6fa');
+  document.body.style.background = d.bgColor || '#f5f6fa';
+
+  // Darken primary for gradient
+  document.documentElement.style.setProperty('--p-dark', darken(d.primaryColor || '#447fb6'));
+
+  document.title = d.title || 'Event';
+
+  var html = '';
+
+  // ── Banner
+  if(d.bannerUrl){
+    html += '<div class="banner"><img src="'+esc(d.bannerUrl)+'" alt="Event Banner" loading="lazy"/></div>';
+  } else {
+    html += '<div class="banner-placeholder"><div class="banner-text">'+esc(d.title||'Event')+'</div></div>';
   }
 
-  // Direct redirect to Supabase public HTML
-  var pageUrl = SUPABASE_URL + '/storage/v1/object/public/' + BUCKET + '/events/' + slug + '/index.html';
-  window.location.href = pageUrl;
-})();
+  // ── Logo
+  if(d.logoUrl){
+    html += '<div class="logo-wrap"><img src="'+esc(d.logoUrl)+'" class="logo" alt="Logo" loading="lazy"/></div>';
+  }
+
+  // ── Hero
+  html += '<div class="hero">';
+  if(d.organizer) html += '<div class="organizer">'+esc(d.organizer)+'</div>';
+  html += '<h1>'+esc(d.title||'Event')+'</h1>';
+  if(d.summary) html += '<p class="summary">'+esc(d.summary)+'</p>';
+  html += '</div>';
+
+  // ── CTA Button
+  if(d.showButton && d.buttonUrl){
+    html += '<div class="cta-wrap"><a href="'+esc(d.buttonUrl)+'" class="cta-btn" target="_blank" rel="noopener">'+esc(d.buttonLabel||'Get Tickets')+'</a></div>';
+  }
+
+  // ── Event Details
+  html += '<div class="section"><h2 class="section-title">Event Details</h2><div class="info-card">';
+  html += '<div class="info-row"><div class="info-icon">📅</div><div><span class="info-label">'+esc(d.startDate||'')+'</span><span class="info-value">to '+esc(d.endDate||'')+'</span></div></div>';
+  if(d.venue){
+    html += '<div class="info-row"><div class="info-icon">📍</div><div><span class="info-label">'+esc(d.venue)+'</span>';
+    if(d.address) html += '<span class="info-value">'+esc(d.address)+'</span>';
+    html += '</div></div>';
+  }
+  html += '</div></div>';
+
+  // ── Amenities
+  if(d.amenities && d.amenities.length > 0){
+    html += '<div class="section"><h2 class="section-title">Amenities</h2><div class="amenities-grid">';
+    d.amenities.forEach(function(a){
+      html += '<div class="amenity-item"><span class="amenity-emoji">'+(AMENITY_EMOJI[a.id]||'✓')+'</span><span>'+esc(a.label)+'</span></div>';
+    });
+    html += '</div></div>';
+  }
+
+  // ── About
+  if(d.about){
+    html += '<div class="section"><h2 class="section-title">About</h2><p class="about-box">'+esc(d.about)+'</p></div>';
+  }
+
+  // ── Contact
+  var hasContact = d.contact || d.phone || d.email || d.website;
+  if(hasContact){
+    html += '<div class="section"><h2 class="section-title">Contact</h2><div class="contact-card">';
+    if(d.contact) html += '<div class="contact-item"><span class="contact-emoji">👤</span>'+esc(d.contact)+'</div>';
+    if(d.phone)   html += '<a href="tel:'+esc(d.phone)+'" class="contact-item"><span class="contact-emoji">📞</span>'+esc(d.phone)+'</a>';
+    if(d.email)   html += '<a href="mailto:'+esc(d.email)+'" class="contact-item"><span class="contact-emoji">✉️</span>'+esc(d.email)+'</a>';
+    if(d.website) html += '<a href="'+esc(d.website)+'" target="_blank" class="contact-item"><span class="contact-emoji">🌐</span>'+esc(d.website)+'</a>';
+    html += '</div></div>';
+  }
+
+  // ── Social
+  if(d.socials && d.socials.length > 0){
+    html += '<div class="section"><h2 class="section-title">Follow Us</h2><div class="social-row">';
+    d.socials.forEach(function(s){
+      var emoji = SOCIAL_EMOJI[s.platform] || '🔗';
+      html += '<a href="'+esc(s.url)+'" target="_blank" rel="noopener" class="social-btn" style="background:'+esc(s.color)+'">'+emoji+' '+esc(s.platform)+'</a>';
+    });
+    html += '</div></div>';
+  }
+
+  // ── Share FAB
+  if(d.addShareButton !== false){
+    html += '<button class="share-fab" onclick="shareEvent()" title="Share this event">⬆</button>';
+  }
+
+  // ── Inject and show
+  var page = document.getElementById('page');
+  page.innerHTML = html;
+  page.style.display = 'block';
+  document.getElementById('loadingScreen').style.display = 'none';
+}
+
+// ─────────────────────────────────────────────
+// SHARE
+// ─────────────────────────────────────────────
+function shareEvent(){
+  if(navigator.share){
+    navigator.share({ title: document.title, url: window.location.href });
+  } else {
+    navigator.clipboard.writeText(window.location.href).then(function(){
+      showToast('Link copied! 🎉');
+    });
+  }
+}
+
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+function showError(){
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('errorScreen').style.display   = 'flex';
+}
+
+function esc(s){
+  if(!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function darken(hex){
+  try{
+    var c = hex.replace('#','');
+    var v = parseInt('FF'+c, 16);
+    var r = Math.round(((v>>16)&0xFF)*0.65).toString(16).padStart(2,'0');
+    var g = Math.round(((v>>8 )&0xFF)*0.65).toString(16).padStart(2,'0');
+    var b = Math.round(((v    )&0xFF)*0.65).toString(16).padStart(2,'0');
+    return '#'+r+g+b;
+  }catch(e){ return hex; }
+}
 </script>
 </body>
 </html>
