@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1"/>
+<meta name="theme-color" id="theme-meta" content="#00838F"/>
+<title id="page-title">Feedback</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--p:#00838F;--surface:#f4f6f9;--card:#fff;--fg:#1a1a2e;--fg2:#5a6480;--r:14px;--sh:0 2px 12px rgba(0,0,0,.07)}
+body{font-family:'Inter',sans-serif;background:var(--surface);color:var(--fg);min-height:100vh}
+
+/* Splash */
+#splash{position:fixed;inset:0;background:var(--p);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s ease}
+#splash.hide{opacity:0;pointer-events:none}
+#splash-logo{width:100px;height:100px;object-fit:contain;border-radius:16px;margin-bottom:16px;box-shadow:0 8px 32px rgba(0,0,0,.25)}
+#splash-name{color:rgba(255,255,255,.85);font-size:15px;font-weight:500;letter-spacing:.5px}
+.spinner{width:38px;height:38px;border:3px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Hero */
+.hero{background:var(--p);padding:36px 20px 28px;text-align:center}
+.hero-icon{width:64px;height:64px;background:rgba(255,255,255,.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:14px}
+.hero h1{color:#fff;font-size:24px;font-weight:800;line-height:1.2}
+.hero p{color:rgba(255,255,255,.8);font-size:13px;margin-top:6px;line-height:1.5}
+
+/* Wrapper */
+.wrap{max-width:480px;margin:0 auto;padding:16px 16px 48px}
+
+/* Cards */
+.card{background:var(--card);border-radius:var(--r);padding:20px;margin-bottom:14px;box-shadow:var(--sh)}
+.card-title{font-size:15px;font-weight:700;color:var(--fg);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+/* Category chips */
+.cats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.cat-chip{padding:7px 14px;border-radius:20px;border:2px solid #e2e6ef;background:#fff;font-size:13px;font-weight:600;color:var(--fg2);cursor:pointer;transition:all .15s;user-select:none}
+.cat-chip.active{border-color:var(--p);background:var(--p);color:#fff}
+.cat-chip:hover{border-color:var(--p);color:var(--p)}
+
+/* Form */
+.form-group{margin-bottom:14px}
+.form-label{font-size:13px;font-weight:600;color:var(--fg);margin-bottom:6px;display:block}
+.form-input,.form-textarea{width:100%;padding:12px 14px;border:1.5px solid #e2e6ef;border-radius:10px;font-size:14px;font-family:'Inter',sans-serif;color:var(--fg);background:#f8f9fc;outline:none;transition:border .15s}
+.form-input:focus,.form-textarea:focus{border-color:var(--p);background:#fff}
+.form-textarea{resize:vertical;min-height:100px}
+
+/* Rating stars */
+.stars{display:flex;gap:8px;margin:4px 0 2px}
+.star{font-size:30px;cursor:pointer;transition:transform .1s;user-select:none;filter:grayscale(1) opacity(.4)}
+.star.active,.star:hover{filter:none;transform:scale(1.15)}
+
+/* Submit button */
+.submit-btn{display:block;width:100%;padding:15px;border-radius:12px;background:var(--p);color:#fff;font-size:15px;font-weight:700;border:none;cursor:pointer;letter-spacing:.2px;transition:opacity .15s}
+.submit-btn:hover{opacity:.9}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Success */
+#success-msg{display:none;text-align:center;padding:24px;background:#e8f5e9;border-radius:12px;margin-top:12px}
+#success-msg .check{font-size:40px;margin-bottom:8px}
+#success-msg h3{font-size:18px;font-weight:700;color:#2e7d32}
+#success-msg p{font-size:13px;color:#388e3c;margin-top:4px}
+
+/* Contact info */
+.contact-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:.5px solid #f0f0f0;font-size:13px;color:var(--fg2)}
+.contact-row:last-child{border:none}
+.contact-row a{color:var(--p);text-decoration:none;font-weight:600}
+
+/* Error */
+#error-state{display:none;text-align:center;padding:80px 24px;max-width:400px;margin:0 auto}
+#page-content{display:none}
+footer{text-align:center;padding:20px;color:#bbb;font-size:12px}
+footer a{color:var(--p);text-decoration:none}
+</style>
+</head>
+<body>
+
+<!-- Splash -->
+<div id="splash">
+  <div id="splash-inner"><div class="spinner"></div></div>
+  <div id="splash-name"></div>
+</div>
+
+<!-- Error -->
+<div id="error-state">
+  <div style="font-size:52px;margin-bottom:14px">⚠️</div>
+  <h2 style="font-size:20px;margin-bottom:8px">Page not found</h2>
+  <p style="font-size:14px;color:#888">This feedback page may have been removed.</p>
+</div>
+
+<!-- Main -->
+<div id="page-content">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-icon">💬</div>
+    <h1 id="hero-title">Share Your Feedback</h1>
+    <p id="hero-company"></p>
+  </div>
+
+  <div class="wrap">
+
+    <!-- Feedback Form Card -->
+    <div class="card">
+      <div class="card-title">✍️ Your Feedback</div>
+
+      <!-- Category selector (rendered dynamically) -->
+      <div id="cats-wrap" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <div class="cats" id="cats-row"></div>
+        </div>
+      </div>
+
+      <!-- Star rating -->
+      <div class="form-group">
+        <label class="form-label">Overall Rating</label>
+        <div class="stars" id="stars-row">
+          <span class="star" data-val="1">★</span>
+          <span class="star" data-val="2">★</span>
+          <span class="star" data-val="3">★</span>
+          <span class="star" data-val="4">★</span>
+          <span class="star" data-val="5">★</span>
+        </div>
+      </div>
+
+      <!-- Name -->
+      <div class="form-group">
+        <label class="form-label">Your Name <span style="color:#aaa;font-weight:400">(optional)</span></label>
+        <input id="input-name" class="form-input" type="text" placeholder="e.g. John Smith"/>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label class="form-label">Email <span style="color:#aaa;font-weight:400">(optional)</span></label>
+        <input id="input-email" class="form-input" type="email" placeholder="your@email.com"/>
+      </div>
+
+      <!-- Message -->
+      <div class="form-group">
+        <label class="form-label">Message *</label>
+        <textarea id="input-msg" class="form-textarea" placeholder="Tell us what you think..."></textarea>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" onclick="submitFeedback()">
+        Send Feedback
+      </button>
+
+      <div id="success-msg">
+        <div class="check">✅</div>
+        <h3>Thank you!</h3>
+        <p>Your feedback has been submitted.</p>
+      </div>
+    </div>
+
+    <!-- Contact card -->
+    <div class="card" id="card-contact" style="display:none">
+      <div class="card-title">📬 Contact</div>
+      <div id="contact-rows"></div>
+    </div>
+
+  </div>
+
+  <footer>Powered by <a href="#">QRPulse</a></footer>
+</div>
+
+<script>
+var SUPABASE_URL  = 'https://huuamwhzydfhqziniqnf.supabase.co';
+var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1dWFtd2h6eWRmaHF6aW5pcW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MjAxOTUsImV4cCI6MjA4OTQ5NjE5NX0.-tTpabRI1b4enlUp8uIXMwmgGv2CLdFgE3vBk01Ye3Y';
+
+var _pageData    = null;
+var _rating      = 0;
+var _selectedCat = '';
+
+function getSlug(){
+  var p = new URLSearchParams(window.location.search);
+  if(p.get('id'))   return p.get('id');
+  if(p.get('slug')) return p.get('slug');
+  return null;
+}
+
+async function fetchPage(slug){
+  var res = await fetch(
+    SUPABASE_URL+'/rest/v1/feedback_pages?slug=eq.'+encodeURIComponent(slug)+'&select=*&limit=1',
+    {headers:{apikey:SUPABASE_ANON, Authorization:'Bearer '+SUPABASE_ANON}}
+  );
+  if(!res.ok) return null;
+  var rows = await res.json();
+  return rows && rows.length ? rows[0] : null;
+}
+
+async function trackScan(slug){
+  try{
+    await fetch(SUPABASE_URL+'/rest/v1/rpc/increment_feedback_scan_count',{
+      method:'POST',
+      headers:{apikey:SUPABASE_ANON,Authorization:'Bearer '+SUPABASE_ANON,'Content-Type':'application/json'},
+      body:JSON.stringify({p_slug:slug})
+    });
+  }catch(e){}
+}
+
+function applyTheme(d){
+  if(d.accent_color){
+    document.documentElement.style.setProperty('--p', d.accent_color);
+    document.getElementById('theme-meta').content = d.accent_color;
+  }
+}
+
+function renderPage(d){
+  _pageData = d;
+
+  if(d.logo_url){
+    document.getElementById('splash-inner').innerHTML =
+      '<img id="splash-logo" src="'+esc(d.logo_url)+'" alt="logo"/>';
+  }
+  document.getElementById('splash-name').textContent = d.company || '';
+  document.title = d.title || d.company || 'Feedback';
+
+  // Hero
+  document.getElementById('hero-title').textContent  = d.title   || 'Share Your Feedback';
+  document.getElementById('hero-company').textContent = d.company || '';
+
+  // Categories
+  var cats = d.categories || [];
+  if(cats.length){
+    var catsRow = document.getElementById('cats-row');
+    cats.forEach(function(cat){
+      var chip = document.createElement('div');
+      chip.className = 'cat-chip';
+      chip.textContent = cat;
+      chip.onclick = function(){
+        document.querySelectorAll('.cat-chip').forEach(function(c){c.classList.remove('active');});
+        chip.classList.add('active');
+        _selectedCat = cat;
+      };
+      catsRow.appendChild(chip);
+    });
+    document.getElementById('cats-wrap').style.display = 'block';
+  }
+
+  // Stars
+  document.querySelectorAll('.star').forEach(function(star){
+    star.addEventListener('click', function(){
+      _rating = parseInt(star.dataset.val);
+      updateStars();
+    });
+    star.addEventListener('mouseover', function(){
+      var hVal = parseInt(star.dataset.val);
+      document.querySelectorAll('.star').forEach(function(s){
+        s.classList.toggle('active', parseInt(s.dataset.val) <= hVal);
+      });
+    });
+  });
+  document.getElementById('stars-row').addEventListener('mouseleave', updateStars);
+
+  // Contact
+  var rows = '';
+  if(d.email)  rows += '<div class="contact-row">✉️ &nbsp;<a href="mailto:'+esc(d.email)+'">'+esc(d.email)+'</a></div>';
+  if(d.website){
+    var wUrl = d.website.startsWith('http') ? d.website : 'https://'+d.website;
+    rows += '<div class="contact-row">🌐 &nbsp;<a href="'+esc(wUrl)+'" target="_blank" rel="noopener">'+esc(d.website)+'</a></div>';
+  }
+  if(rows){
+    document.getElementById('contact-rows').innerHTML = rows;
+    document.getElementById('card-contact').style.display = 'block';
+  }
+}
+
+function updateStars(){
+  document.querySelectorAll('.star').forEach(function(s){
+    s.classList.toggle('active', parseInt(s.dataset.val) <= _rating);
+  });
+}
+
+async function submitFeedback(){
+  var msg = document.getElementById('input-msg').value.trim();
+  if(!msg){ alert('Please enter a message.'); return; }
+
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  try{
+    var payload = {
+      page_slug:   _pageData ? _pageData.slug   : '',
+      page_id:     _pageData ? _pageData.id      : null,
+      rating:      _rating   || null,
+      category:    _selectedCat || null,
+      name:        document.getElementById('input-name').value.trim() || null,
+      email:       document.getElementById('input-email').value.trim() || null,
+      message:     msg,
+      submitted_at: new Date().toISOString(),
+    };
+
+    var res = await fetch(SUPABASE_URL+'/rest/v1/feedback_submissions',{
+      method:'POST',
+      headers:{
+        apikey: SUPABASE_ANON,
+        Authorization: 'Bearer '+SUPABASE_ANON,
+        'Content-Type': 'application/json',
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if(res.ok || res.status === 201){
+      document.getElementById('submit-btn').style.display = 'none';
+      document.getElementById('success-msg').style.display = 'block';
+      // Clear form
+      document.getElementById('input-name').value  = '';
+      document.getElementById('input-email').value = '';
+      document.getElementById('input-msg').value   = '';
+      _rating = 0; _selectedCat = '';
+    } else {
+      var err = await res.text();
+      alert('Submit failed: '+err);
+      btn.disabled = false;
+      btn.textContent = 'Send Feedback';
+    }
+  }catch(e){
+    alert('Network error: '+e.message);
+    btn.disabled = false;
+    btn.textContent = 'Send Feedback';
+  }
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function hideSplash(delay){
+  setTimeout(function(){
+    var s=document.getElementById('splash');
+    s.classList.add('hide');
+    setTimeout(function(){s.style.display='none';},500);
+  },delay);
+}
+
+window.addEventListener('DOMContentLoaded', async function(){
+  var slug = getSlug();
+  if(!slug){
+    document.getElementById('error-state').style.display='block';
+    hideSplash(300); return;
+  }
+  try{
+    var data = await fetchPage(slug);
+    if(!data){
+      document.getElementById('error-state').style.display='block';
+      hideSplash(300); return;
+    }
+    applyTheme(data);
+    renderPage(data);
+    trackScan(slug);
+    document.getElementById('page-content').style.display='block';
+    hideSplash(data.logo_url ? 1800 : 700);
+  }catch(err){
+    console.error(err);
+    document.getElementById('error-state').style.display='block';
+    hideSplash(300);
+  }
+});
+</script>
+</body>
+</html>
