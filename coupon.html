@@ -18,8 +18,10 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'DM Sans', sans-serif;
-      background: var(--bg); color: var(--text);
-      min-height: 100vh; overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
     /* ── SPLASH ── */
@@ -59,13 +61,15 @@
     }
     .hero-overlay {
       position: absolute; inset: 0;
-      background: linear-gradient(to bottom, rgba(15,15,19,.1) 0%, rgba(15,15,19,.65) 100%);
+      background: linear-gradient(to bottom,
+        rgba(15,15,19,.1) 0%, rgba(15,15,19,.65) 100%);
     }
     .hero-logo {
       position: absolute; bottom: -32px; left: 24px;
       width: 64px; height: 64px; border-radius: 16px;
       object-fit: contain; border: 3px solid var(--card);
-      background: var(--card); box-shadow: 0 4px 20px rgba(0,0,0,.4);
+      background: var(--card);
+      box-shadow: 0 4px 20px rgba(0,0,0,.4);
     }
     .no-logo-badge {
       position: absolute; bottom: -32px; left: 24px;
@@ -114,7 +118,8 @@
     .coupon-top::after {
       content: ''; position: absolute; top: -40px; right: -40px;
       width: 140px; height: 140px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(232,67,147,0.25), transparent 70%);
+      background: radial-gradient(circle,
+        rgba(232,67,147,0.25), transparent 70%);
       pointer-events: none;
     }
     .offer-tag {
@@ -266,7 +271,7 @@
 <!-- ══ CONTENT ════════════════════════════════════════════════ -->
 <div id="content">
   <div class="hero">
-    <img id="hero-img"  src="" alt="" class="hero-img" style="display:none" />
+    <img id="hero-img" src="" alt="" class="hero-img" style="display:none" />
     <div class="hero-overlay"></div>
     <div class="no-logo-badge" id="no-logo-badge">🎟️</div>
     <img id="hero-logo" src="" alt="logo" class="hero-logo" style="display:none" />
@@ -327,18 +332,17 @@
 
 <script>
   // ══════════════════════════════════════════════════════════════
-  //  ✅ SUPABASE CREDENTIALS — REAL VALUES
+  //  SUPABASE CREDENTIALS
   // ══════════════════════════════════════════════════════════════
   const SUPA_URL = 'https://huuamwhzydfhqziniqnf.supabase.co';
   const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1dWFtd2h6eWRmaHF6aW5pcW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MjAxOTUsImV4cCI6MjA4OTQ5NjE5NX0.-tTpabRI1b4enlUp8uIXMwmgGv2CLdFgE3vBk01Ye3Y';
 
-  // ── Get ?id= from URL ─────────────────────────────────────────
+  // Get ?id= from URL
   const slug = new URLSearchParams(location.search).get('id');
 
   // ── FETCH ─────────────────────────────────────────────────────
   async function loadCoupon() {
     if (!slug) { showError(); return; }
-
     try {
       const res = await fetch(
         `${SUPA_URL}/rest/v1/coupons?slug=eq.${encodeURIComponent(slug)}&select=*&limit=1`,
@@ -350,12 +354,10 @@
           }
         }
       );
-
       if (!res.ok) { showError(); return; }
       const rows = await res.json();
       if (!rows || rows.length === 0) { showError(); return; }
       render(rows[0]);
-
     } catch (err) {
       console.error('Fetch error:', err);
       showError();
@@ -363,11 +365,6 @@
   }
 
   // ── RENDER ────────────────────────────────────────────────────
-  // ✅ Field names EXACTLY match Flutter coupon_screen.dart:
-  //   company, headline, description, coupon_name,
-  //   valid_until, terms_conditions, website_url,
-  //   address, primary_color, button_color,
-  //   banner_url, logo_url, scan_count
   function render(d) {
 
     // Colors
@@ -379,24 +376,27 @@
     // Splash logo
     if (d.logo_url) {
       const sl = document.getElementById('splash-logo');
-      sl.src = d.logo_url; sl.style.display = 'block';
+      sl.src = d.logo_url;
+      sl.style.display = 'block';
       document.getElementById('splash-icon').style.display = 'none';
     }
 
     // Hero banner
     if (d.banner_url) {
       const hi = document.getElementById('hero-img');
-      hi.src = d.banner_url; hi.style.display = 'block';
+      hi.src = d.banner_url;
+      hi.style.display = 'block';
     }
 
     // Hero logo badge
     if (d.logo_url) {
       const hl = document.getElementById('hero-logo');
-      hl.src = d.logo_url; hl.style.display = 'block';
+      hl.src = d.logo_url;
+      hl.style.display = 'block';
       document.getElementById('no-logo-badge').style.display = 'none';
     }
 
-    // Company  ← Flutter field: "company"
+    // Company
     document.getElementById('company-name').textContent = d.company || '';
 
     // Scan count
@@ -405,17 +405,17 @@
         `${Number(d.scan_count).toLocaleString()} scans`;
     }
 
-    // Headline  ← Flutter field: "headline"
+    // Headline
     document.getElementById('headline-text').textContent =
       d.headline || 'Special Offer';
 
-    // Coupon code  ← Flutter field: "coupon_name"
+    // Coupon code
     const code = (d.coupon_name || '').toUpperCase();
     document.getElementById('coupon-code').textContent = code || '—';
     window._couponCode = code;
     if (!code) document.getElementById('code-wrap').style.display = 'none';
 
-    // Meta — expiry  ← Flutter field: "valid_until"
+    // Meta — expiry
     const metaRow = document.getElementById('meta-row');
     if (d.valid_until) {
       const exp   = new Date(d.valid_until);
@@ -423,52 +423,53 @@
       const lbl   = exp.toLocaleDateString('en-IN',
         { day: 'numeric', month: 'short', year: 'numeric' });
       metaRow.innerHTML +=
-        `<div class="meta-chip" style="color:${isExp ? '#ff6b6b':'#6bcb77'}">
-           <span>${isExp ? '❌':'✅'}</span>
+        `<div class="meta-chip" style="color:${isExp ? '#ff6b6b' : '#6bcb77'}">
+           <span>${isExp ? '❌' : '✅'}</span>
            ${isExp ? 'Expired' : 'Valid until'} ${lbl}
          </div>`;
     }
 
-    // Meta — website
+    // Meta — website domain
     if (d.website_url) {
       const domain = d.website_url.replace(/^https?:\/\//, '').split('/')[0];
       metaRow.innerHTML +=
         `<div class="meta-chip"><span>🌐</span> ${domain}</div>`;
     }
 
-    // Description  ← Flutter field: "description"
+    // Description
     if (d.description) {
       document.getElementById('description').textContent = d.description;
     }
 
-    // Terms  ← Flutter field: "terms_conditions"
+    // Terms
     if (d.terms_conditions && d.terms_conditions.trim()) {
       document.getElementById('terms-box').style.display = 'block';
       document.getElementById('terms-text').textContent  = d.terms_conditions;
     }
 
-    // Address  ← Flutter field: "address"
+    // Address
     if (d.address && d.address.trim()) {
       document.getElementById('address-box').style.display = 'flex';
       document.getElementById('address-text').textContent  = d.address;
     }
 
-    // Redeem  ← Flutter field: "website_url"
+    // Redeem button
     if (d.website_url) {
       const btn = document.getElementById('redeem-btn');
       btn.href = d.website_url.startsWith('http')
-        ? d.website_url : 'https://' + d.website_url;
+        ? d.website_url
+        : 'https://' + d.website_url;
       btn.style.display = 'block';
     }
 
-    // Title
+    // Page title
     document.title = `${code || 'Coupon'} — ${d.company || 'Offer'}`;
 
-    // Show after splash
+    // Show content after splash
     setTimeout(showContent, 1100);
   }
 
-  // ── Helpers ───────────────────────────────────────────────────
+  // ── HELPERS ───────────────────────────────────────────────────
   function showContent() {
     const splash  = document.getElementById('splash');
     const content = document.getElementById('content');
@@ -490,8 +491,10 @@
     if (!code) return;
     navigator.clipboard.writeText(code).catch(() => {
       const el = document.createElement('textarea');
-      el.value = code; document.body.appendChild(el);
-      el.select(); document.execCommand('copy');
+      el.value = code;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
       document.body.removeChild(el);
     });
     const btn   = document.getElementById('copy-btn');
@@ -506,7 +509,7 @@
     }, 2200);
   }
 
-  // ── Boot ──────────────────────────────────────────────────────
+  // Boot
   loadCoupon();
 </script>
 </body>
