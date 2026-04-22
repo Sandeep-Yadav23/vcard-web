@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Facebook Page</title>
+
+  <!-- ── Splash / loading colours filled by JS ── -->
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+    }
+
+    /* ── Welcome / splash ── */
+    #splash {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: var(--primary, #3766B8);
+      z-index: 999;
+      transition: opacity .4s ease;
+    }
+    #splash img { width: 120px; height: 120px; object-fit: contain; border-radius: 16px; }
+    #splash .spinner {
+      margin-top: 32px; width: 36px; height: 36px;
+      border: 4px solid rgba(255,255,255,.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Main content ── */
+    #content { display: none; padding-bottom: 40px; }
+
+    /* ── Banner ── */
+    #banner {
+      width: 100%; height: 200px;
+      background: var(--primary, #3766B8);
+      object-fit: cover;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      margin: 16px;
+      padding: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+
+    /* ── Page name ── */
+    .page-name {
+      font-size: 22px; font-weight: 700;
+      color: #1c1e21;
+      margin-bottom: 4px;
+    }
+    .page-website {
+      font-size: 14px; color: #65676b;
+      margin-bottom: 16px;
+      word-break: break-all;
+    }
+    .page-website a { color: var(--primary, #3766B8); text-decoration: none; }
+
+    /* ── Like button ── */
+    #like-wrap {
+      display: flex; align-items: center; gap: 12px;
+      margin-top: 12px;
+    }
+    #like-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 20px;
+      background: var(--primary, #3766B8);
+      color: #fff; border: none;
+      border-radius: 8px; font-size: 15px; font-weight: 600;
+      cursor: pointer;
+    }
+    #like-btn svg { width: 18px; height: 18px; fill: #fff; }
+    #like-count { font-size: 14px; color: #65676b; }
+
+    /* ── Facebook embed ── */
+    #fb-embed {
+      margin: 0 16px;
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+    .fb-page { width: 100% !important; }
+
+    /* ── Footer ── */
+    .footer { text-align: center; margin-top: 24px; font-size: 12px; color: #bcc0c4; }
+  </style>
+</head>
+<body>
+
+<!-- ── Welcome splash ── -->
+<div id="splash">
+  <img id="splash-logo" src="" alt="logo" style="display:none" />
+  <div class="spinner"></div>
+</div>
+
+<!-- ── Main content ── -->
+<div id="content">
+  <img id="banner" src="" alt="banner" style="display:none" />
+
+  <div class="card">
+    <div class="page-name" id="page-name"></div>
+    <div class="page-website" id="page-website"></div>
+    <div id="like-wrap">
+      <button id="like-btn" onclick="openFbPage()">
+        <!-- thumb-up SVG -->
+        <svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zM23 10c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+        Like Page
+      </button>
+      <span id="like-count" style="display:none"></span>
+    </div>
+  </div>
+
+  <!-- Facebook Page plugin embed -->
+  <div id="fb-embed">
+    <div id="fb-page-plugin"></div>
+  </div>
+
+  <div class="footer">Powered by QRPulse</div>
+</div>
+
+<!-- ── Facebook SDK ── -->
+<div id="fb-root"></div>
+
+<script>
+  // ── 1. Read slug from URL ────────────────────────────────────────
+  const params   = new URLSearchParams(location.search);
+  const slug     = params.get('id');
+  const SUPA_URL = 'https://huuamwhzydfhqziniqnf.supabase.co'; // <-- replace
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1dWFtd2h6eWRmaHF6aW5pcW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MjAxOTUsImV4cCI6MjA4OTQ5NjE5NX0.-tTpabRI1b4enlUp8uIXMwmgGv2CLdFgE3vBk01Ye3Y';                    // <-- replace
+
+  // ── 2. Fetch page data ───────────────────────────────────────────
+  async function loadPage() {
+    if (!slug) { hideSplash(); return; }
+
+    try {
+      const res  = await fetch(`${SUPA_URL}/rest/v1/facebook_pages?slug=eq.${slug}&select=*`, {
+        headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}` }
+      });
+      const rows = await res.json();
+      if (!rows.length) { hideSplash(); return; }
+      render(rows[0]);
+    } catch (e) {
+      console.error(e);
+      hideSplash();
+    }
+  }
+
+  // ── 3. Render ────────────────────────────────────────────────────
+  function render(d) {
+    // Apply brand colours as CSS vars
+    document.documentElement.style.setProperty('--primary',   d.primary_color   || '#3766B8');
+    document.documentElement.style.setProperty('--secondary', d.secondary_color || '#3766B8');
+    document.getElementById('splash').style.background = d.primary_color || '#3766B8';
+
+    // Splash logo
+    if (d.logo_url) {
+      const logo = document.getElementById('splash-logo');
+      logo.src = d.logo_url;
+      logo.style.display = 'block';
+    }
+
+    // Banner
+    if (d.banner_url) {
+      const banner = document.getElementById('banner');
+      banner.src   = d.banner_url;
+      banner.style.display = 'block';
+    }
+
+    // Page info
+    document.getElementById('page-name').textContent = d.name || 'Facebook Page';
+    if (d.website) {
+      document.getElementById('page-website').innerHTML =
+        `<a href="${d.website}" target="_blank" rel="noopener">${d.website}</a>`;
+    }
+
+    // Like count
+    if (!d.hide_likes) {
+      const lc = document.getElementById('like-count');
+      lc.textContent = `${(d.scan_count || 0).toLocaleString()} scans`;
+      lc.style.display = 'block';
+    }
+
+    // Store fb_url for button
+    window._fbUrl = d.facebook_url
+      ? (d.facebook_url.startsWith('http') ? d.facebook_url : 'https://' + d.facebook_url)
+      : null;
+
+    // Facebook Page Plugin
+    if (window._fbUrl) {
+      const cleanUrl = encodeURIComponent(window._fbUrl);
+      document.getElementById('fb-page-plugin').innerHTML =
+        `<div class="fb-page" data-href="${window._fbUrl}" data-tabs="" data-width="" data-height="" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="${window._fbUrl}" class="fb-xfbml-parse-ignore"><a href="${window._fbUrl}">Facebook</a></blockquote></div>`;
+      loadFbSDK();
+    }
+
+    // Show content, hide splash after short delay
+    setTimeout(hideSplash, 1200);
+  }
+
+  function hideSplash() {
+    const splash  = document.getElementById('splash');
+    const content = document.getElementById('content');
+    splash.style.opacity = '0';
+    setTimeout(() => {
+      splash.style.display = 'none';
+      content.style.display = 'block';
+    }, 400);
+  }
+
+  function openFbPage() {
+    if (window._fbUrl) window.open(window._fbUrl, '_blank', 'noopener');
+  }
+
+  // ── 4. Load Facebook SDK (deferred) ──────────────────────────────
+  function loadFbSDK() {
+    if (document.getElementById('facebook-jssdk')) return;
+    const js   = document.createElement('script');
+    js.id      = 'facebook-jssdk';
+    js.async   = true;
+    js.src     = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v19.0';
+    document.head.appendChild(js);
+  }
+
+  window.fbAsyncInit = function() {
+    FB.init({ xfbml: true, version: 'v19.0' });
+  };
+
+  loadPage();
+</script>
+</body>
+</html>
