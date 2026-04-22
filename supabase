@@ -575,7 +575,8 @@
     //  CONFIG  —  Replace with your actual Supabase credentials
     // ══════════════════════════════════════════════════════════════
     const SUPABASE_URL      = 'https://huuamwhzydfhqziniqnf.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1dWFtd2h6eWRmaHF6aW5pcW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MjAxOTUsImV4cCI6MjA4OTQ5NjE5NX0.-tTpabRI1b4enlUp8uIXMwmgGv2CLdFgE3vBk01Ye3Y';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1dWFtd2h6eWRmaHF6aW5pcW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MjAxOTUsImV4cCI6MjA4OTQ5NjE5NX0.-tTpabRI1b4enlUp8uIXMwmgGv2CLdFgE3vBk01Ye3Y
+';
 
     // ══════════════════════════════════════════════════════════════
     //  INIT SUPABASE
