@@ -7,20 +7,20 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --p:   #0090e3;
-      --s:   #e37b00;
-      --bg:  #08080f;
-      --c1:  #111118;
-      --c2:  #18181f;
-      --txt: #f0f0f5;
-      --mut: #666677;
-      --ln:  rgba(255,255,255,0.06);
-    }
+  :root {
+  --p:   #4f46e5;   /* indigo */
+  --s:   #7c3aed;   /* purple-indigo */
+  --bg:  #f0f4ff;   /* light blue-white bg */
+  --c1:  #ffffff;
+  --c2:  #f5f7ff;
+  --txt: #1e3a8a;   /* dark blue text */
+  --mut: #6b7280;
+  --ln:  rgba(99,102,241,0.12);
+}
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Outfit', sans-serif;
-      background: var(--bg); color: var(--txt);
+      background: linear-gradient(145deg,#f0f4ff,#e8eeff,#f5f0ff);
       min-height: 100vh; overflow-x: hidden;
     }
     body::before {
@@ -92,7 +92,7 @@
     /* HERO */
     .hero {
       position:relative; width:100%; height:250px; overflow:hidden;
-      background:linear-gradient(135deg,#080d1a,#0a0a1c);
+      background: linear-gradient(135deg,#1e3a8a,#3730a3,#4f46e5); 
     }
     .hero-img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; opacity:.6; }
     .hero-grad {
@@ -242,7 +242,7 @@
       width:100%; padding:17px; border:none; border-radius:16px;
       font-family:'Outfit',sans-serif; font-size:15px; font-weight:600;
       letter-spacing:.3px; cursor:pointer; color:#fff;
-      background:linear-gradient(135deg,var(--p) 0%,var(--s) 100%);
+      background: linear-gradient(135deg,#4f46e5,#7c3aed);
       transition:transform .15s, opacity .2s;
       animation:glow 3s ease-in-out infinite;
     }
