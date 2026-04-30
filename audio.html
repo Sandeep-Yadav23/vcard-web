@@ -156,13 +156,13 @@ var BARS          = 42;
 
     var d = await res.json();
     renderPlayer(d);
+    trackScan(slug); // ✅ YE ADD KARO — renderPlayer ke baad
 
   } catch (e) {
     console.error(e);
     showError();
   }
 })();
-
 // ─────────────────────────────────────────────
 // RENDER
 // ─────────────────────────────────────────────
@@ -298,8 +298,29 @@ audio.addEventListener('ended', function () {
 
 // ─────────────────────────────────────────────
 // HELPERS
+// ────────────────────────────────────────────
 // ─────────────────────────────────────────────
-function showError() {
+// TRACK SCAN
+// ─────────────────────────────────────────────
+async function trackScan(slug){
+  if(document.visibilityState === 'hidden') return;
+  var key = 'scanned_' + slug;
+  if(sessionStorage.getItem(key)) return;
+  sessionStorage.setItem(key, '1');
+  try {
+    await fetch(SUPABASE_URL + '/rest/v1/rpc/increment_audio_scan_count', {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_ANON,
+        Authorization: 'Bearer ' + SUPABASE_ANON,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ p_slug: slug })
+    });
+  } catch(e){}
+}
+  
+  function showError() {
   document.getElementById('loadingScreen').style.display = 'none';
   document.getElementById('errorScreen').style.display   = 'block';
 }
