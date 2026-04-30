@@ -347,9 +347,16 @@ window.addEventListener('DOMContentLoaded', async function(){
       document.getElementById('error-state').style.display='block';
       hideSplash(300); return;
     }
-    applyTheme(data);
+  applyTheme(data);
     renderPage(data);
-    trackScan(slug);
+
+    // ✅ Only count ONCE per real browser session
+    var sessionKey = 'scanned_fb_' + slug;
+    if (!sessionStorage.getItem(sessionKey)) {
+      sessionStorage.setItem(sessionKey, '1');
+      trackScan(slug); // fire-and-forget
+    }
+
     document.getElementById('page-content').style.display='block';
     hideSplash(data.logo_url ? 1800 : 700);
   }catch(err){
