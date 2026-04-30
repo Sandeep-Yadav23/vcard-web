@@ -130,17 +130,15 @@
 <!-- ── Facebook SDK ── -->
 <div id="fb-root"></div>
 
+<!-- Replace your existing <script> block with this -->
 <script>
-  // ── 1. Read slug from URL ────────────────────────────────────────
   const params   = new URLSearchParams(location.search);
   const slug     = params.get('id');
-  const SUPA_URL = 'https://huuamwhzydfhqziniqnf.supabase.co'; // <-- replace
-  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1dWFtd2h6eWRmaHF6aW5pcW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MjAxOTUsImV4cCI6MjA4OTQ5NjE5NX0.-tTpabRI1b4enlUp8uIXMwmgGv2CLdFgE3vBk01Ye3Y';                    // <-- replace
+  const SUPA_URL = 'https://huuamwhzydfhqziniqnf.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // your key
 
-  // ── 2. Fetch page data ───────────────────────────────────────────
   async function loadPage() {
     if (!slug) { hideSplash(); return; }
-
     try {
       const res  = await fetch(`${SUPA_URL}/rest/v1/facebook_pages?slug=eq.${slug}&select=*`, {
         headers: { apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}` }
@@ -148,93 +146,37 @@
       const rows = await res.json();
       if (!rows.length) { hideSplash(); return; }
       render(rows[0]);
+
+      // ── ✅ Increment scan count ONCE per real session visit ──────────
+      const sessionKey = `scanned_${slug}`;
+      if (!sessionStorage.getItem(sessionKey)) {
+        sessionStorage.setItem(sessionKey, '1');
+        incrementScan(rows[0].id);   // fire-and-forget
+      }
+
     } catch (e) {
       console.error(e);
       hideSplash();
     }
   }
 
-  // ── 3. Render ────────────────────────────────────────────────────
-  function render(d) {
-    // Apply brand colours as CSS vars
-    document.documentElement.style.setProperty('--primary',   d.primary_color   || '#3766B8');
-    document.documentElement.style.setProperty('--secondary', d.secondary_color || '#3766B8');
-    document.getElementById('splash').style.background = d.primary_color || '#3766B8';
-
-    // Splash logo
-    if (d.logo_url) {
-      const logo = document.getElementById('splash-logo');
-      logo.src = d.logo_url;
-      logo.style.display = 'block';
+  // ── Calls the Supabase RPC defined in your schema ──────────────────
+  async function incrementScan(rowId) {
+    try {
+      await fetch(`${SUPA_URL}/rest/v1/rpc/increment_scan_count`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: SUPA_KEY,
+          Authorization: `Bearer ${SUPA_KEY}`
+        },
+        body: JSON.stringify({ row_id: rowId })
+      });
+    } catch (e) {
+      console.warn('Scan count update failed (non-critical):', e);
     }
-
-    // Banner
-    if (d.banner_url) {
-      const banner = document.getElementById('banner');
-      banner.src   = d.banner_url;
-      banner.style.display = 'block';
-    }
-
-    // Page info
-    document.getElementById('page-name').textContent = d.name || 'Facebook Page';
-    if (d.website) {
-      document.getElementById('page-website').innerHTML =
-        `<a href="${d.website}" target="_blank" rel="noopener">${d.website}</a>`;
-    }
-
-    // Like count
-    if (!d.hide_likes) {
-      const lc = document.getElementById('like-count');
-      lc.textContent = `${(d.scan_count || 0).toLocaleString()} scans`;
-      lc.style.display = 'block';
-    }
-
-    // Store fb_url for button
-    window._fbUrl = d.facebook_url
-      ? (d.facebook_url.startsWith('http') ? d.facebook_url : 'https://' + d.facebook_url)
-      : null;
-
-    // Facebook Page Plugin
-    if (window._fbUrl) {
-      const cleanUrl = encodeURIComponent(window._fbUrl);
-      document.getElementById('fb-page-plugin').innerHTML =
-        `<div class="fb-page" data-href="${window._fbUrl}" data-tabs="" data-width="" data-height="" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="${window._fbUrl}" class="fb-xfbml-parse-ignore"><a href="${window._fbUrl}">Facebook</a></blockquote></div>`;
-      loadFbSDK();
-    }
-
-    // Show content, hide splash after short delay
-    setTimeout(hideSplash, 1200);
   }
 
-  function hideSplash() {
-    const splash  = document.getElementById('splash');
-    const content = document.getElementById('content');
-    splash.style.opacity = '0';
-    setTimeout(() => {
-      splash.style.display = 'none';
-      content.style.display = 'block';
-    }, 400);
-  }
-
-  function openFbPage() {
-    if (window._fbUrl) window.open(window._fbUrl, '_blank', 'noopener');
-  }
-
-  // ── 4. Load Facebook SDK (deferred) ──────────────────────────────
-  function loadFbSDK() {
-    if (document.getElementById('facebook-jssdk')) return;
-    const js   = document.createElement('script');
-    js.id      = 'facebook-jssdk';
-    js.async   = true;
-    js.src     = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v19.0';
-    document.head.appendChild(js);
-  }
-
-  window.fbAsyncInit = function() {
-    FB.init({ xfbml: true, version: 'v19.0' });
-  };
-
-  loadPage();
-</script>
-</body>
+  // ... rest of your existing functions (render, hideSplash, openFbPage, loadFbSDK) unchanged
+</script></body>
 </html>
