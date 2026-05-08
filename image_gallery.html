@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet"/>
 <style>
 * {
+  
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -786,7 +787,6 @@ function renderPage(cfg) {
 function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
 ========== INIT & SUPABASE ==========
-// ========== INIT & SUPABASE ==========
 async function init() {
   const slug = getSlug();
   if (!slug) { showError(); hideLoader(); return; }
