@@ -786,6 +786,7 @@ function renderPage(cfg) {
 function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
 ========== INIT & SUPABASE ==========
+// ========== INIT & SUPABASE ==========
 async function init() {
   const slug = getSlug();
   if (!slug) { showError(); hideLoader(); return; }
@@ -796,13 +797,12 @@ async function init() {
     images = data.image_urls || [];
     applyTheme(data);
     renderPage(data);
-    } catch(e) {
+  } catch(e) {
     console.warn(e);
     showError();
   }
   hideLoader();
 }
-
 // Event binding after dom ready
 window.addEventListener('DOMContentLoaded', () => {
   init();
