@@ -786,7 +786,7 @@ function renderPage(cfg) {
 
 function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
-========== INIT & SUPABASE ==========
+// ========== INIT & SUPABASE ==========
 async function init() {
   const slug = getSlug();
   if (!slug) { showError(); hideLoader(); return; }
