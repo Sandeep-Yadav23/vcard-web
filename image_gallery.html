@@ -565,18 +565,18 @@ async function fetchConfig(slug) {
   } catch(e) { return null; }
 }
 
-async function trackScan(slug) {
-  try {
-    await fetch(SUPABASE_URL + '/rest/v1/rpc/increment_scan_count', {
-      method: 'POST', headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + SUPABASE_ANON, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ p_slug: slug })
-    });
-    await fetch(SUPABASE_URL + '/rest/v1/image_qr_scans', {
-      method: 'POST', headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + SUPABASE_ANON, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-      body: JSON.stringify({ page_slug: slug, user_agent: navigator.userAgent })
-    });
-  } catch(e) {}
-}
+// async function trackScan(slug) {
+//   try {
+//     await fetch(SUPABASE_URL + '/rest/v1/rpc/increment_scan_count', {
+//       method: 'POST', headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + SUPABASE_ANON, 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ p_slug: slug })
+//     });
+//     await fetch(SUPABASE_URL + '/rest/v1/image_qr_scans', {
+//       method: 'POST', headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + SUPABASE_ANON, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+//       body: JSON.stringify({ page_slug: slug, user_agent: navigator.userAgent })
+//     });
+//   } catch(e) {}
+// }
 
 function applyTheme(cfg) {
   if (cfg.bg_color) document.documentElement.style.setProperty('--bg', cfg.bg_color);
@@ -785,7 +785,7 @@ function renderPage(cfg) {
 
 function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
-// ========== INIT & SUPABASE ==========
+========== INIT & SUPABASE ==========
 async function init() {
   const slug = getSlug();
   if (!slug) { showError(); hideLoader(); return; }
@@ -796,8 +796,7 @@ async function init() {
     images = data.image_urls || [];
     applyTheme(data);
     renderPage(data);
-    trackScan(slug);
-  } catch(e) {
+    } catch(e) {
     console.warn(e);
     showError();
   }
